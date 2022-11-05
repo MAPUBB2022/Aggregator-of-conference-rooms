@@ -60,6 +60,16 @@ public class Organiser extends User implements ICrudRepositoryInterface<Offer, I
         }
     }
 
+    @Override
+    public Offer findById(Integer id) {
+        for(Offer offer : this.sentOffers) {
+            if(offer.getIdOffer().equals(id)) {
+                return offer;
+            }
+        }
+        return null;
+    }
+
 
     public void acceptOffer(){
 

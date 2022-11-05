@@ -49,10 +49,10 @@ public class AdRepository implements AdRepositoryInterface {
     }
 
     @Override
-    public Integer findById(Integer id){
+    public Ad findById(Integer id){
        for(Ad ad: this.allAds) {
            if(ad.getIdAd().equals(id)) {
-               return id;
+               return ad;
            }
        }
        return null;

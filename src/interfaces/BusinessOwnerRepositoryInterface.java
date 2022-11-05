@@ -4,7 +4,7 @@ import model.BusinessOwner;
 
 public interface BusinessOwnerRepositoryInterface extends ICrudRepositoryInterface<BusinessOwner, String > {
 
-    BusinessOwner findByUsername(String username);
+    BusinessOwner findByUsernameAndPassword(String username, String password);
 }
 
 

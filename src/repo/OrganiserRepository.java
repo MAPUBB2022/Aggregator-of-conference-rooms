@@ -58,14 +58,30 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
         }
     }
 
-
     @Override
-    public Organiser findByUsername(String username) {
-        for( Organiser o: this.allOrganisers) {
-            if (o.getUsername().equals(username)) {
-                return o;
+    public Organiser findById(String username) {
+        for( Organiser organiser: this.allOrganisers) {
+            if (organiser.getUsername().equals(username)) {
+                return organiser;
             }
         }
+        return null;
+    }
+
+    @Override
+    public Organiser findByUsernameAndPassword(String username, String password) {
+        Organiser organiser = findById(username);
+
+        if (organiser != null ) {
+            if (organiser.getPassword().equals(password)) {
+                return organiser;
+            }
+//            else {
+//                System.out.println("Incorrect password");
+//                return null;
+//            }
+        }
+       // System.out.println("User doesn't exist");
         return null;
     }
 

@@ -47,22 +47,22 @@ class BusinessOwnerRepositoryTest {
         assertEquals(BusinessOwnerRepository.getInstance().getSize(), 1);
         BusinessOwnerRepository.getInstance().update("raulstefan002", businessOwner1);
 
-        assertNull(BusinessOwnerRepository.getInstance().findByUsername("raul1111"));
+        assertNull(BusinessOwnerRepository.getInstance().findById("raul1111"));
 
         BusinessOwnerRepository.getInstance().update("raulstefan002", businessOwner1);
-        assertNull(BusinessOwnerRepository.getInstance().findByUsername("raulstefan002"));
+        assertNull(BusinessOwnerRepository.getInstance().findById("raulstefan002"));
 
     }
 
     @org.junit.jupiter.api.Test
-    void findByUsername() {
+    void findById() {
         System.out.println("Test find business owner by username");
 
         BusinessOwner businessOwner1 = new BusinessOwner("asd", "b", "raul", "123");
         BusinessOwnerRepository.getInstance().add(businessOwner1);
 
-        assertNull(BusinessOwnerRepository.getInstance().findByUsername("raul1111"));
-        assertEquals(BusinessOwnerRepository.getInstance().findByUsername("raul"), businessOwner1);
+        assertNull(BusinessOwnerRepository.getInstance().findById("raul1111"));
+        assertEquals(BusinessOwnerRepository.getInstance().findById("raul"), businessOwner1);
 
     }
 }

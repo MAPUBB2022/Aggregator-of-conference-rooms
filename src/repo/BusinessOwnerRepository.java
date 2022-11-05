@@ -55,12 +55,24 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         }
     }
 
+    @Override
+    public BusinessOwner findById(String username) {
+        for(BusinessOwner businessOwner: this.allBusinessOwner){
+            if(businessOwner.getUsername().equals(username))
+                return businessOwner;
+        }
+        return null;
+    }
+
 
     @Override
-    public BusinessOwner findByUsername(String s){
-        for(BusinessOwner b: this.allBusinessOwner){
-            if(b.getUsername().equals(s))
-                return b;
+    public BusinessOwner findByUsernameAndPassword(String username, String password) {
+        BusinessOwner businessOwner = findById(username);
+
+        if(businessOwner != null) {
+            if(businessOwner.getPassword().equals(password)) {
+                return businessOwner;
+            }
         }
         return null;
     }

@@ -55,6 +55,17 @@ public class BusinessOwner extends User implements ICrudRepositoryInterface<Ad, 
         this.ads.removeIf(ad -> ad.getIdAd().equals(id));
     }
 
+
+    @Override
+    public Ad findById(Integer id) {
+        for(Ad ad : this.ads) {
+            if(ad.getIdAd().equals(id)) {
+                return ad;
+            }
+        }
+            return null;
+    }
+
     @Override
     public void update(Integer id, Ad new_ad) {
         for( Ad ad : this.ads) {
@@ -67,7 +78,6 @@ public class BusinessOwner extends User implements ICrudRepositoryInterface<Ad, 
             }
         }
     }
-
 
 
     public void acceptOffer(){

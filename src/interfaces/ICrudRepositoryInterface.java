@@ -8,4 +8,6 @@ public interface ICrudRepositoryInterface<E, ID> {
 
     void update(ID id, E newEntity);
 
+    E findById(ID id);
+
 }

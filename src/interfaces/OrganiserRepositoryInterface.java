@@ -2,6 +2,8 @@ package interfaces;
 
 import model.Organiser;
 
+import java.util.SplittableRandom;
+
 public interface OrganiserRepositoryInterface extends ICrudRepositoryInterface<Organiser, String > {
-    Organiser findByUsername(String username);
+    Organiser findByUsernameAndPassword(String username, String password);
 }
