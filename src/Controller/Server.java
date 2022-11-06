@@ -1,8 +1,5 @@
 package Controller;
 
-
-import interfaces.AdRepositoryInterface;
-import interfaces.BusinessOwnerRepositoryInterface;
 import repo.AdRepository;
 import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
@@ -13,12 +10,12 @@ import java.util.ArrayList;
 public class Server {
     public Server() {
         this.view = new View();
-        this.organisers = new OrganiserRepository();
-        this.businessOwners = new BusinessOwnerRepository();
-        this.ads = new AdRepository();
+        this.organisers = OrganiserRepository.getInstance();
+        this.businessOwners = BusinessOwnerRepository.getInstance();
+        this.ads = AdRepository.getInstance();
     }
 
-    private View view;
+    private final View view;
 
     private OrganiserRepository organisers;
 
