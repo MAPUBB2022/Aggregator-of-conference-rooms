@@ -8,9 +8,9 @@ public class Calendar {
     private ArrayList<LocalDate> occupiedDates;
     private ArrayList<LocalDate> freeDates;
 
-    public Calendar(ArrayList<LocalDate> occupiedDates, ArrayList<LocalDate> freeDates) {
-        this.occupiedDates = occupiedDates;
-        this.freeDates = freeDates;
+    public Calendar() {
+        this.occupiedDates = new ArrayList<>();
+        this.freeDates = new ArrayList<>();
     }
 
     public ArrayList<LocalDate> getOccupiedDates() {

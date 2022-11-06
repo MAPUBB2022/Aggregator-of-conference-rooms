@@ -72,7 +72,6 @@ public class BusinessOwner extends User implements ICrudRepositoryInterface<Ad, 
             if(ad.getIdAd().equals(id)) {
                 ad.setIdAd(new_ad.getIdAd());
                 ad.setProduct(new_ad.getProduct());
-                ad.setImages(new_ad.getImages());
                 ad.setCalendar(new_ad.getCalendar());
                 break;
             }

@@ -10,7 +10,7 @@ import java.util.List;
 public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface{
 
     private static BusinessOwnerRepository single_instance = null;
-    private final List<BusinessOwner> allBusinessOwner = new ArrayList<>();
+    private List<BusinessOwner> allBusinessOwner = new ArrayList<>();
 
     public static BusinessOwnerRepository getInstance() {
         if (single_instance == null){

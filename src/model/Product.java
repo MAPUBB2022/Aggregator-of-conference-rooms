@@ -2,12 +2,12 @@ package model;
 
 public abstract class Product {
     private String name;
-    private int rating;
+    private Integer rating;
     private String description;
 
-    public Product(String name, int rating, String description) {
+    public Product(String name, String description) {
         this.name = name;
-        this.rating = rating;
+        this.rating = null;
         this.description = description;
     }
 
@@ -19,11 +19,11 @@ public abstract class Product {
         this.name = name;
     }
 
-    public int getRating() {
+    public Integer getRating() {
         return rating;
     }
 
-    public void setRating(int rating) {
+    public void setRating(Integer rating) {
         this.rating = rating;
     }
 

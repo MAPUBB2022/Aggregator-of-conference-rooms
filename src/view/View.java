@@ -1,11 +1,11 @@
 package view;
 
 import interfaces.AdRepositoryInterface;
-import model.BusinessOwner;
-import model.Organiser;
-import model.User;
+import jdk.jfr.FlightRecorder;
+import model.*;
 import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -99,6 +99,10 @@ public class View {
         System.out.println("Please login");
     }
 
+    public void wrongNumber() {
+        System.out.println("Please choose a valid option");
+    }
+
     public void adsView(AdRepositoryInterface ads) {
     }
 
@@ -115,6 +119,34 @@ public class View {
         return option;
     }
 
+    public void noOffersReceived() {
+        System.out.println("You haven't received any offer");
+    }
+
+    public void showProduct(Product product){
+        System.out.println("Product: " + product.getName());
+        System.out.println("Rating: " + product.getRating());
+        System.out.println("Description: " + product.getDescription());
+    }
+
+    public void showCalendar(Calendar calendar){
+
+    }
+    public void showAd(Ad ad) {
+        System.out.println("Ad" + ad.getIdAd());
+        showProduct(ad.getProduct());
+        showCalendar(ad.getCalendar());
+    }
+    public void showOffer(Offer offer) {
+        System.out.println("Offer" + offer.getIdOffer());
+        System.out.println("Starting Date: " + offer.getStartingDate());
+        System.out.println("Ending Date: " + offer.getEndingDate());
+        System.out.println("Description: " + offer.getDescription());
+        System.out.println("Description: " + offer.getDescription());
+        for (Ad ad:offer.getAdsInOffer()) {
+            System.out.println("Ad" + ad.getIdAd()+"-Product "+ad.getProduct().getName());
+        }
+    }
 //    public void printBusinessOwners(){
 //        for(BusinessOwnerRepository businessOwner : BusinessOwnerRepository.getInstance()) {
 //            System.out.println("First "+businessOwner.getFirstName());
@@ -122,6 +154,128 @@ public class View {
 //            System.out.println("Username "+businessOwner.getUsername());
 //        }
 //    }
+
+    public Ad createAdView() {
+        Scanner input = new Scanner(System.in);
+        //aici trebuie incremetat idul automat cand se face un obiect nou
+        System.out.println("id: ");
+        Integer id = input.nextInt();
+        System.out.println("Product: ");
+        Integer option = selectTypeOfProduct();
+        Calendar calendar = new Calendar();
+        if(option == 1) {
+            Hall hall = createHallView();
+            Ad ad = new Ad(id, hall, calendar);
+            return ad;
+        }
+        if(option == 2) {
+            DJ dj = createDJView();
+            Ad ad = new Ad(id, dj, calendar);
+            return ad;
+        }
+        if(option == 3) {
+            CandyBar candyBar = createCandyBarView();
+            Ad ad = new Ad(id, candyBar, calendar);
+            return ad;
+        }
+        return null;
+    }
+
+    public Hall createHallView() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Name: ");
+        String name = input.nextLine();
+        System.out.println("Description: ");
+        String description = input.nextLine();
+        System.out.println("Location: ");
+        String location = input.nextLine();
+        System.out.println("Capacity: ");
+        Integer capacity = input.nextInt();
+
+        Hall hall = new Hall(name, description, location, capacity);
+        return hall;
+    }
+
+    public DJ createDJView() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Name: ");
+        String name = input.nextLine();
+        System.out.println("Description: ");
+        String description = input.nextLine();
+        // facut teste sa raspunda corect
+        boolean lights = false;
+        System.out.println("Lights: yes/no");
+        String answer = input.nextLine();
+        if(answer.equals("yes") || answer.equals("y")) {
+            lights = true;
+        }
+
+        boolean stereo = false;
+        System.out.println("Stereo: yes/no");
+        answer = input.nextLine();
+        if(answer.equals("yes") || answer.equals("y")) {
+            stereo = true;
+        }
+        DJ dj = new DJ(name, description, lights, stereo);
+        return dj;
+    }
+
+    public CandyBar createCandyBarView() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Name: ");
+        String name = input.nextLine();
+        System.out.println("Description: ");
+        String description = input.nextLine();
+        System.out.println("Add sweets: ");
+        boolean ok = true;
+        ArrayList<String> sweets = new ArrayList<>();
+
+        while (ok) {
+            String sweet = input.nextLine();
+            if(sweet.equals(" ") || sweet.equals("\n") || sweet.equals("")) {
+                ok = false;
+            }
+            sweets.add(sweet);
+        }
+
+        CandyBar candyBar = new CandyBar(name, description, sweets);
+
+        return candyBar;
+    }
+
+
+    public Integer selectTypeOfProduct() {
+
+        boolean ok = true;
+        Scanner input = new Scanner(System.in);
+        Integer option = null;
+
+
+        while (ok) {
+            System.out.println("Choose the type of the service you offer: ");
+            System.out.println("1- Hall renting");
+            System.out.println("2- Dj");
+            System.out.println("3- Candybar");
+            option = input.nextInt();
+            if(option == 1) {
+                //Hall hall = createHallView();
+                return 1;
+            }
+            if(option == 2) {
+                //DJ dj = createDJView();
+                return 2;
+            }
+            if (option == 3) {
+              //  CandyBar candyBar = createCandyBarView();
+                return 3;
+            }
+            wrongNumber();
+
+        }
+        somethingWentWrong();
+        return null;
+    }
+
 
 
 }

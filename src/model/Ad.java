@@ -5,13 +5,11 @@ public class Ad {
 
     private Integer idAd;
     private Product product;
-    private ArrayList<String > images;
     private Calendar calendar;
 
     public Ad(Integer id,Product product, Calendar calendar) {
         this.idAd = id;
         this.product = product;
-        this.images = new ArrayList<>();
         this.calendar = calendar;
     }
 
@@ -29,14 +27,6 @@ public class Ad {
 
     public void setProduct(Product product) {
         this.product = product;
-    }
-
-    public ArrayList<String> getImages() {
-        return images;
-    }
-
-    public void setImages(ArrayList<String> images) {
-        this.images = images;
     }
 
     public Calendar getCalendar() {

@@ -2,10 +2,10 @@ package model;
 
 public class Hall extends Product{
     private String location;
-    private int capacity;
+    private Integer capacity;
 
-    public Hall(String name, int rating, String description, String location, int capacity) {
-        super(name, rating, description);
+    public Hall(String name, String description, String location, Integer capacity) {
+        super(name, description);
         this.location=location;
         this.capacity=capacity;
     }
@@ -18,11 +18,11 @@ public class Hall extends Product{
         this.location = location;
     }
 
-    public int getCapacity() {
+    public Integer getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(int capacity) {
+    public void setCapacity(Integer capacity) {
         this.capacity = capacity;
 }
 

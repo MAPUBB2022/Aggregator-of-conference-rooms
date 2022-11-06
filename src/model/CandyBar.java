@@ -5,8 +5,8 @@ import java.util.List;
 public class CandyBar extends Product{
     List<String> sweets;
 
-    public CandyBar(String name, int rating, String description, List<String> sweets) {
-        super(name, rating, description);
+    public CandyBar(String name, String description, List<String> sweets) {
+        super(name, description);
         this.sweets = sweets;
     }
 

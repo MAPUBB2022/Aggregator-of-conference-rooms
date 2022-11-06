@@ -4,8 +4,8 @@ public class DJ extends Product {
     private boolean lights;
     private boolean stereo;
 
-    public DJ(String name, int rating, String description, boolean lights, boolean stereo) {
-        super(name, rating, description);
+    public DJ(String name, String description, boolean lights, boolean stereo) {
+        super(name, description);
         this.lights = lights;
         this.stereo = stereo;
     }
