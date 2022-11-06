@@ -77,14 +77,6 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         return null;
     }
 
-    public void printBusinessOwners(){
-        for(BusinessOwner b : this.allBusinessOwner) {
-            System.out.println("First "+b.getFirstName());
-            System.out.println("Lastname "+b.getLastName());
-            System.out.println("Username "+b.getUsername());
-        }
-    }
-
     public Integer getSize() {
         return this.allBusinessOwner.size();
     }

@@ -3,20 +3,28 @@ package Controller;
 
 import interfaces.AdRepositoryInterface;
 import interfaces.BusinessOwnerRepositoryInterface;
-import interfaces.OrganiserRepositoryInterface;
+import repo.AdRepository;
+import repo.BusinessOwnerRepository;
+import repo.OrganiserRepository;
 import view.View;
 
 import java.util.ArrayList;
 
 public class Server {
+    public Server() {
+        this.view = new View();
+        this.organisers = new OrganiserRepository();
+        this.businessOwners = new BusinessOwnerRepository();
+        this.ads = new AdRepository();
+    }
 
     private View view;
 
-    private OrganiserRepositoryInterface organisers;
+    private OrganiserRepository organisers;
 
-    private BusinessOwnerRepositoryInterface businessOwners;
+    private BusinessOwnerRepository businessOwners;
 
-    private AdRepositoryInterface ads;
+    private AdRepository ads;
 
 
 //    public boolean validateCredentials(ArrayList<String> credentials) {
@@ -51,6 +59,8 @@ public class Server {
                     }
                 }
 
+            } else if (option == 0) {
+                break;
 
             }
         }

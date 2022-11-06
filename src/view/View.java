@@ -2,7 +2,9 @@ package view;
 
 import interfaces.AdRepositoryInterface;
 import model.Ad;
+import model.BusinessOwner;
 import repo.AdRepository;
+import repo.BusinessOwnerRepository;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -13,6 +15,7 @@ public class View {
 
         System.out.println("Welcome!");
         System.out.println("Select oprion: ");
+        System.out.println("0. Exit");
         System.out.println("1. Login");
         System.out.println("2. SignUp");
         int option = input.nextInt();
@@ -58,6 +61,14 @@ public class View {
 
         return option;
     }
+
+//    public void printBusinessOwners(){
+//        for(BusinessOwnerRepository businessOwner : BusinessOwnerRepository.getInstance()) {
+//            System.out.println("First "+businessOwner.getFirstName());
+//            System.out.println("Lastname "+businessOwner.getLastName());
+//            System.out.println("Username "+businessOwner.getUsername());
+//        }
+//    }
 
 
 }

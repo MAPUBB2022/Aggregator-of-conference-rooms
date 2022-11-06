@@ -2,7 +2,7 @@
 <project version="4">
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="Aggregator-of-conference-rooms" options="--add-modules java.datatransfer,java.desktop --add-exports java.datatransfer/java.awt=ALL-UNNAMED" />
+      <module name="Aggregator-of-conference-rooms" options="" />
     </option>
   </component>
 </project>

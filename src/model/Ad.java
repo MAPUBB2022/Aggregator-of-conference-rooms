@@ -1,12 +1,11 @@
 package model;
 
-import java.awt.*;
 import java.util.ArrayList;
 public class Ad {
 
     private Integer idAd;
     private Product product;
-    private ArrayList<Image> images;
+    private ArrayList<String > images;
     private Calendar calendar;
 
     public Ad(Integer id,Product product, Calendar calendar) {
@@ -32,11 +31,11 @@ public class Ad {
         this.product = product;
     }
 
-    public ArrayList<Image> getImages() {
+    public ArrayList<String> getImages() {
         return images;
     }
 
-    public void setImages(ArrayList<Image> images) {
+    public void setImages(ArrayList<String> images) {
         this.images = images;
     }
 
