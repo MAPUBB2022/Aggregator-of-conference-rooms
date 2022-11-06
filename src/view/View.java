@@ -1,12 +1,14 @@
 package view;
 
 import interfaces.AdRepositoryInterface;
-import model.Ad;
 import model.BusinessOwner;
-import repo.AdRepository;
+import model.Organiser;
+import model.User;
 import repo.BusinessOwnerRepository;
+import repo.OrganiserRepository;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class View {
@@ -45,6 +47,52 @@ public class View {
 
     public void wrongCredentials() {
         System.out.println("Wrong username or password please try again");
+    }
+
+    public ArrayList<String> signupView() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Sign up form: ");
+        System.out.println("First Name:");
+        String firstName = input.nextLine();
+        System.out.println("Last Name: ");
+        String lastName = input.nextLine();
+        boolean ok = true;
+        String username = null;
+        while(ok) {
+            System.out.println("username: ");
+            username = input.nextLine();
+            if(BusinessOwnerRepository.getInstance().findById(username) != null || OrganiserRepository.getInstance().findById(username) != null) {
+                System.out.println("Unavailable username please choose another one");
+            }
+            else {
+                ok = false;
+            }
+        }
+        System.out.println("Password: ");
+        String password = input.nextLine();
+        String userType = null;
+        ok = true;
+        while(ok) {
+            System.out.println("I am a: ");
+            System.out.println("1-event organiser");
+            System.out.println("2-business owner");
+            userType = input.nextLine();
+            if(userType.equals("1") || userType.equals("2")) {
+                ok = false;
+            }
+            else {
+                System.out.println("Wrong answer! Please choose 1 or 2");
+            }
+        }
+
+        ArrayList<String> credentials = new ArrayList<>(Arrays.asList(userType, firstName, lastName, username, password));
+        return credentials;
+
+    }
+
+    public void userCreatedSuccessfully() {
+        System.out.println("User created Successfully!");
+        System.out.println("Please login");
     }
 
     public void adsView(AdRepositoryInterface ads) {

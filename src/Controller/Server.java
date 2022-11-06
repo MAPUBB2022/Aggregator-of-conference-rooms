@@ -1,5 +1,7 @@
 package Controller;
 
+import interfaces.BusinessOwnerRepositoryInterface;
+import model.BusinessOwner;
 import repo.AdRepository;
 import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
@@ -13,6 +15,8 @@ public class Server {
         this.organisers = OrganiserRepository.getInstance();
         this.businessOwners = BusinessOwnerRepository.getInstance();
         this.ads = AdRepository.getInstance();
+        this.organiserController = new OrganiserController();
+        this.businessOwnerController = new BusinessOwnerController();
     }
 
     private final View view;
@@ -22,6 +26,10 @@ public class Server {
     private BusinessOwnerRepository businessOwners;
 
     private AdRepository ads;
+
+    private OrganiserController organiserController;
+
+    private BusinessOwnerController businessOwnerController;
 
 
 //    public boolean validateCredentials(ArrayList<String> credentials) {
@@ -55,6 +63,16 @@ public class Server {
                         runProgram();
                     }
                 }
+
+            } else if (option == 2) {
+                ArrayList<String> credentials = view.signupView();
+                if(credentials.get(0).equals("1")) {
+                    OrganiserRepository.getInstance().add(organiserController.createUser(credentials));
+                } else if (credentials.get(0).equals("2")) {
+                    BusinessOwnerRepository.getInstance().add(businessOwnerController.createUser(credentials));
+                }
+                view.userCreatedSuccessfully();
+                runProgram();
 
             } else if (option == 0) {
                 break;
