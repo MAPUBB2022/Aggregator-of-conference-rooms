@@ -32,51 +32,46 @@ public class Server {
     private BusinessOwnerController businessOwnerController;
 
 
-//    public boolean validateCredentials(ArrayList<String> credentials) {
-//
-//        if(credentials.get(0).equals("1")) {
-//            return organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null;
-//        }
-//
-//        return businessOwners.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null;
-//    }
+    public void login() {
+        ArrayList<String> credentials = view.loginView();
+        if(credentials.get(0).equals("1") && organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
+            view.adsView(ads);
+        }
+        else if (credentials.get(0).equals("2") && businessOwners.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
+            view.businessOwnerMenu();
+        }
+        else {
+            view.wrongCredentials();
+            login();
+        }
+
+    }
+
+    public void signUp() {
+        ArrayList<String> credentials = view.signupView();
+        if(credentials.get(0).equals("1")) {
+            OrganiserRepository.getInstance().add(organiserController.createUser(credentials));
+            view.userCreatedSuccessfully();
+            login();
+        }
+        else if (credentials.get(0).equals("2")) {
+            BusinessOwnerRepository.getInstance().add(businessOwnerController.createUser(credentials));
+            view.userCreatedSuccessfully();
+            login();
+        }
+        else {
+            view.somethingWentWrong();
+        }
+    }
     public void runProgram() {
         while(true) {
             int option = view.welcomeView();
-
             if(option == 1) {
-                ArrayList<String> credentials = view.loginView();
-                if(credentials.get(0).equals("1")) {
-                    if(organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
-                        view.adsView(ads);
-                    }
-                    else {
-                        view.wrongCredentials();
-                        runProgram();
-                    }
-                } else if (credentials.get(0).equals("2")) {
-                    if(businessOwners.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
-                        view.businessOwnerMenu();
-                    }
-                    else {
-                        view.wrongCredentials();
-                        runProgram();
-                    }
-                }
-
+               login();
             } else if (option == 2) {
-                ArrayList<String> credentials = view.signupView();
-                if(credentials.get(0).equals("1")) {
-                    OrganiserRepository.getInstance().add(organiserController.createUser(credentials));
-                } else if (credentials.get(0).equals("2")) {
-                    BusinessOwnerRepository.getInstance().add(businessOwnerController.createUser(credentials));
-                }
-                view.userCreatedSuccessfully();
-                runProgram();
-
+               signUp();
             } else if (option == 0) {
                 break;
-
             }
         }
     }

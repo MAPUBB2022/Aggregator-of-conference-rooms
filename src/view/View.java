@@ -90,6 +90,10 @@ public class View {
 
     }
 
+    public void somethingWentWrong() {
+        System.out.println("Something went wrong...");
+        System.out.println("Please try again later!");
+    }
     public void userCreatedSuccessfully() {
         System.out.println("User created Successfully!");
         System.out.println("Please login");
@@ -105,6 +109,7 @@ public class View {
         System.out.println("1. Received offers");
         System.out.println("2. Your Ads");
         System.out.println("3. Create ad");
+        System.out.println("4. Log out");
         int option = input.nextInt();
 
         return option;
