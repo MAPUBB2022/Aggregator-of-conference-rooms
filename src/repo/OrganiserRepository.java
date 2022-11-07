@@ -92,4 +92,8 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
             System.out.println("Username "+o.getUsername());
         }
     }
+    public Integer getSize() {
+
+        return this.allOrganisers.size();
+    }
 }

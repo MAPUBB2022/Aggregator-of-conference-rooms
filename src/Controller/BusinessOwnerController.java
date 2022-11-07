@@ -19,6 +19,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public Integer showReceivedOffers(BusinessOwner businessOwner, View view) {
+        //daca lista e goala => ret 1
         if(businessOwner.getReceivedOffers().isEmpty()) {
             view.noOffersReceived();
             return 1;

@@ -2,6 +2,7 @@ package tests;
 
 import model.BusinessOwner;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import repo.BusinessOwnerRepository;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -13,20 +14,19 @@ class BusinessOwnerRepositoryTest {
         BusinessOwnerRepository.getInstance();
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void add() {
         System.out.println("Test add business owner");
         BusinessOwner businessOwner1 = new BusinessOwner("asd", "b", "bowner1", "123");
 
-        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 1);
-        BusinessOwnerRepository.getInstance().add(businessOwner1);
+        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 2);
 
-        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 2);
         BusinessOwnerRepository.getInstance().add(businessOwner1);
-        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 2);
+        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 3);
+
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void remove() {
         System.out.println("Test remove business owner");
 
@@ -34,27 +34,27 @@ class BusinessOwnerRepositoryTest {
         BusinessOwnerRepository.getInstance().remove("raulstefan002");
 
         assertEquals(BusinessOwnerRepository.getInstance().getSize(), 1);
+
         BusinessOwnerRepository.getInstance().remove("bowner1");
         assertEquals(BusinessOwnerRepository.getInstance().getSize(), 1);
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void update() {
         System.out.println("Test update business owner");
 
         BusinessOwner businessOwner1 = new BusinessOwner("asd", "b", "raul1111", "123");
 
-        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 1);
+        assertEquals(BusinessOwnerRepository.getInstance().getSize(), 2);
         BusinessOwnerRepository.getInstance().update("raulstefan002", businessOwner1);
 
-        assertNull(BusinessOwnerRepository.getInstance().findById("raul1111"));
+        assertNotNull(BusinessOwnerRepository.getInstance().findById("raul1111"));
 
-        BusinessOwnerRepository.getInstance().update("raulstefan002", businessOwner1);
         assertNull(BusinessOwnerRepository.getInstance().findById("raulstefan002"));
 
     }
 
-    @org.junit.jupiter.api.Test
+    @Test
     void findById() {
         System.out.println("Test find business owner by username");
 

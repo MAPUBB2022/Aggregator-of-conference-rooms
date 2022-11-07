@@ -40,8 +40,10 @@ public class Organiser extends User implements ICrudRepositoryInterface<Offer, I
         this.sentOffers.add(entity);
     }
 
+    //sterge o oferta dupa id din lista de oferte trimise
     @Override
     public void remove(Integer id){
+
         this.sentOffers.removeIf(of -> of.getIdOffer().equals(id));
     }
 

@@ -50,8 +50,10 @@ public class BusinessOwner extends User implements ICrudRepositoryInterface<Ad, 
         this.ads.add(entity);
     }
 
+    //sterge dupa id un anunt din lista de anunturi
     @Override
     public void remove(Integer id){
+
         this.ads.removeIf(ad -> ad.getIdAd().equals(id));
     }
 
