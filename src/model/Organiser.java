@@ -52,11 +52,10 @@ public class Organiser extends User implements ICrudRepositoryInterface<Offer, I
 
         for( Offer of : this.sentOffers) {
             if(of.getIdOffer().equals(id)) {
-                of.setIdOffer(new_offer.getIdOffer());
                 of.setStartingDate(new_offer.getStartingDate());
                 of.setEndingDate(new_offer.getEndingDate());
                 of.setDescription(new_offer.getDescription());
-                of.setAdsInOffer(new_offer.getAdsInOffer());
+                of.setAdInOffer(new_offer.getAdInOffer());
                 break;
             }
         }
@@ -72,10 +71,6 @@ public class Organiser extends User implements ICrudRepositoryInterface<Offer, I
         return null;
     }
 
-
-    public void acceptOffer(){
-
-    }
 
 
 }

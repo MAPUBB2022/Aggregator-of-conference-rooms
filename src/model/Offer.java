@@ -4,45 +4,42 @@ import java.util.ArrayList;
 import java.util.Date;
 
 public class Offer {
-    private Integer idOffer;
+    private final Integer idOffer;
+    private static Integer counter = 1;
 
-    private Date startingDate;
+    private String startingDate;
 
-    private Date endingDate;
+    private String endingDate;
 
     private String description;
 
-    private ArrayList<Ad> adsInOffer;
+    private Ad adInOffer;
 
-    public Offer(Integer idOffer, Date startingDate, Date endingDate, String description, ArrayList<Ad> adsInOffer) {
-        this.idOffer = idOffer;
+    public Offer(String startingDate, String  endingDate, String description, Ad adInOffer) {
+        this.idOffer = counter++;
         this.startingDate = startingDate;
         this.endingDate = endingDate;
         this.description = description;
-        this.adsInOffer = adsInOffer;
+        this.adInOffer = adInOffer;
     }
 
     public Integer getIdOffer() {
         return idOffer;
     }
 
-    public void setIdOffer(int idOffer) {
-        this.idOffer = idOffer;
-    }
-
-    public Date getStartingDate() {
+    public String getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(Date startingDate) {
+    public void setStartingDate(String startingDate) {
         this.startingDate = startingDate;
     }
 
-    public Date getEndingDate() {
+    public String getEndingDate() {
         return endingDate;
     }
 
-    public void setEndingDate(Date endingDate) {
+    public void setEndingDate(String endingDate) {
         this.endingDate = endingDate;
     }
 
@@ -54,11 +51,11 @@ public class Offer {
         this.description = description;
     }
 
-    public ArrayList<Ad> getAdsInOffer() {
-        return adsInOffer;
+    public Ad getAdInOffer() {
+        return adInOffer;
     }
 
-    public void setAdsInOffer(ArrayList<Ad> adsInOffer) {
-        this.adsInOffer = adsInOffer;
+    public void setAdInOffer(Ad adInOffer) {
+        this.adInOffer = adInOffer;
     }
 }

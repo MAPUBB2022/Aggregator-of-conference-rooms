@@ -1,7 +1,7 @@
 package repo;
 
 import interfaces.OrganiserRepositoryInterface;
-import model.Organiser;
+import model.*;
 
 import java.util.ArrayList;
 
@@ -21,12 +21,15 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
         return single_instance;
 
     }
+
+
     public static void populateOrganisers(){
         Organiser organiser1 = new Organiser("Paul", "Bop", "paulstefan002", "9082");
         Organiser organiser2 = new Organiser("Andrei", "Malinas", "andreim", "1321");
 
        OrganiserRepository.getInstance().add(organiser1);
        OrganiserRepository.getInstance().add(organiser2);
+
     }
 
     @Override
@@ -82,6 +85,17 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
 //            }
         }
        // System.out.println("User doesn't exist");
+        return null;
+    }
+
+    public Organiser findByOfferId(Integer idOffer) {
+        for(Organiser organiser : this.allOrganisers) {
+            for(Offer offer: organiser.getSentOffers()) {
+                if(offer.getIdOffer() == idOffer) {
+                    return organiser;
+                }
+            }
+        }
         return null;
     }
 

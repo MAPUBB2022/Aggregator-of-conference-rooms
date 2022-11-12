@@ -1,5 +1,7 @@
 package Controller;
 
+import interfaces.AdRepositoryInterface;
+import model.Ad;
 import model.BusinessOwner;
 import model.Offer;
 import model.Organiser;
@@ -8,6 +10,7 @@ import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
 import view.View;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 
 public class Server {
@@ -24,26 +27,26 @@ public class Server {
         this.organisers = OrganiserRepository.getInstance();
         this.businessOwners = BusinessOwnerRepository.getInstance();
         this.ads = AdRepository.getInstance();
-        this.organiserController = new OrganiserController();
-        this.businessOwnerController = new BusinessOwnerController();
+        this.organiserController = new OrganiserController(this.view);
+        this.businessOwnerController = new BusinessOwnerController(this.view);
     }
 
-    public void login() {
+    public void login() throws ParseException {
         ArrayList<String> credentials = view.loginView();
-        if(credentials.get(0).equals("1") && organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
-            view.adsView(ads);
-        }
-        else if (credentials.get(0).equals("2") && businessOwners.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
+
+        if (credentials.get(0).equals("1") && organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
+            this.organiserMenu2(credentials.get(1));
+        } else if (credentials.get(0).equals("2") && businessOwners.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
             this.businessOwnerMenu2(credentials.get(1));
-        }
-        else {
+        } else {
             view.wrongCredentials();
             login();
         }
 
+
     }
 
-    public void signUp() {
+    public void signUp() throws ParseException {
         ArrayList<String> credentials = view.signupView();
         if(credentials.get(0).equals("1")) {
             OrganiserRepository.getInstance().add(organiserController.createUser(credentials));
@@ -60,23 +63,21 @@ public class Server {
         }
     }
 
-    public void businessOwnerMenu2(String username) {
+    public void businessOwnerMenu2(String username) throws ParseException {
         int option = view.businessOwnerMenu();
-        BusinessOwner businessOwner = businessOwners.findById(username);
+        businessOwnerController.setBusinessOwner(businessOwners.findById(username));
 
         if(option == 1) {
-            int subOption = businessOwnerController.showReceivedOffers(businessOwner, view);
-            //daca lista e goala
-            if(subOption == 1) {
-                businessOwnerMenu2(username); //se face o alta alegere din meniul lui business owner
-            }
-
+            businessOwnerController.receivedOffersMenu(organisers);
+            businessOwnerMenu2(username);
         }
         else if(option == 2) {
-            businessOwnerController.showAds(businessOwner, view);
+            businessOwnerController.showAds();
+            businessOwnerMenu2(username);
         }
         else if(option == 3) {
-            businessOwnerController.createAd(businessOwner, view);
+            businessOwnerController.createAd(ads);
+            businessOwnerMenu2(username);
         }
         else if(option == 4) {
             runProgram();
@@ -88,22 +89,21 @@ public class Server {
 
     }
 
-    public void organiserMenu2(String username) {
+    public void organiserMenu2(String username) throws ParseException {
         int option = view.organiserMenu();
-        Organiser organiser=organisers.findById(username);
+        organiserController.setOrganiser(organisers.findById(username));
 
         if(option==1){
-            organiserController.createOffer(organiser,view);
+            organiserController.showAllAds(ads);
+            organiserMenu2(username);
         }
         else if(option==2) {
-            BusinessOwner businessOwner=view.showBusinessOwner(); //trb implementata in view
-            Offer offer=view.createOfferView();
-            organiserController.sendOffer(businessOwner,offer);
+            organiserController.showAcceptedOffers();
+            organiserMenu2(username);
         }
         else if(option==3) {
-
-            //cine e businessOwner-ul din fct? sau poate nu sunt ok parametrii de la showALlAds
-            organiserController.showAllAds(businessOwners,view);
+            organiserController.createOffer(ads, businessOwners);
+            organiserMenu2(username);
         }
         else if(option==4){
             runProgram();
@@ -112,7 +112,7 @@ public class Server {
             organiserMenu2(username); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
         }
     }
-    public void runProgram() {
+    public void runProgram() throws ParseException {
         while(true) {
             int option = view.welcomeView();
             if(option == 1) {
@@ -121,6 +121,8 @@ public class Server {
                signUp();
             } else if (option == 0) {
                 break;
+            } else {
+                view.wrongNumber();
             }
         }
     }

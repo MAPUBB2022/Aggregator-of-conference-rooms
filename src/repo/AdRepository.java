@@ -10,7 +10,7 @@ import java.util.List;
 public class AdRepository implements AdRepositoryInterface {
 
     private static AdRepository single_instance = null;
-    private final List<Ad> allAds = new ArrayList<>();
+    private List<Ad> allAds = new ArrayList<>();
 
    public static AdRepository getInstance() {
        if(single_instance == null) {
@@ -19,6 +19,9 @@ public class AdRepository implements AdRepositoryInterface {
        return single_instance;
    }
 
+    public List<Ad> getAllAds() {
+        return allAds;
+    }
 
     @Override
     public void add(Ad entity){
@@ -41,7 +44,6 @@ public class AdRepository implements AdRepositoryInterface {
     public void update(Integer id, Ad new_ad) {
         for( Ad ad : this.allAds) {
             if(ad.getIdAd().equals(id)) {
-                ad.setIdAd(new_ad.getIdAd());
                 ad.setProduct(new_ad.getProduct());
                 ad.setCalendar(new_ad.getCalendar());
                 break;

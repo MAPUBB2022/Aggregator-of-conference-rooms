@@ -3,22 +3,19 @@ package model;
 import java.util.ArrayList;
 public class Ad {
 
-    private Integer idAd;
+    private static Integer counter = 1;
+    private final Integer idAd;
     private Product product;
     private Calendar calendar;
 
-    public Ad(Integer id,Product product, Calendar calendar) {
-        this.idAd = id;
+    public Ad(Product product, Calendar calendar) {
+        this.idAd = counter++;
         this.product = product;
         this.calendar = calendar;
     }
 
     public Integer getIdAd() {
         return idAd;
-    }
-
-    public void setIdAd(Integer idAd) {
-        this.idAd = idAd;
     }
 
     public Product getProduct() {

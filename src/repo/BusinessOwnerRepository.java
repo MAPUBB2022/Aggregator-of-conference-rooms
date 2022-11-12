@@ -4,6 +4,7 @@ import model.*;
 import interfaces.BusinessOwnerRepositoryInterface;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +21,10 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         return single_instance;
     }
 
+    public List<BusinessOwner> getAllBusinessOwner() {
+        return allBusinessOwner;
+    }
+
     //static-poti apela metoda fara sa creezi un obj
     public static void populateBusinessOwners(){
         BusinessOwner businessOwner1 = new BusinessOwner("Raul", "Pop", "raulstefan002", "1234");
@@ -29,21 +34,34 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
        BusinessOwnerRepository.getInstance().add(businessOwner2);
 
        Hall hall1 =new Hall("Sala 1","Evenimente exclusiviste","Cluj",150);
-       Ad ad1=new Ad(1,hall1,new Calendar());
+       Ad ad1=new Ad(hall1, new Calendar());
 
        DJ dj1 =new DJ("DjAndrei","atmosfera geniala",true,true);
-       Ad ad2=new Ad(2,dj1,new Calendar());
+       Ad ad2=new Ad(dj1, new Calendar());
 
        List<String> sweets = new ArrayList<>();
        sweets.add("prajituri");
        sweets.add("tort");
        sweets.add("Bhutan");
        CandyBar candybar1=new CandyBar("AllDelicious","very good",sweets);
-       Ad ad3=new Ad(3,candybar1,new Calendar());
+       Ad ad3=new Ad(candybar1, new Calendar());
 
        businessOwner1.add(ad1);
        businessOwner2.add(ad2);
        businessOwner2.add(ad3);
+
+       AdRepository.getInstance().add(ad1);
+       AdRepository.getInstance().add(ad2);
+       AdRepository.getInstance().add(ad3);
+
+
+
+//       ArrayList<Ad> adsInOffer = new ArrayList<>();
+//       adsInOffer.add(ad1);
+//
+//       Offer offer = new Offer("12.12.2022", "24.12.2022", "das", adsInOffer);
+//
+//       businessOwner1.getReceivedOffers().add(offer);
 
     }
 
@@ -90,6 +108,17 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         if(businessOwner != null) {
             if(businessOwner.getPassword().equals(password)) {
                 return businessOwner;
+            }
+        }
+        return null;
+    }
+
+    public BusinessOwner findByAdId(Integer idAd) {
+        for(BusinessOwner businessOwner : this.allBusinessOwner) {
+            for(Ad ad: businessOwner.getAds()) {
+                if(ad.getIdAd() == idAd) {
+                    return businessOwner;
+                }
             }
         }
         return null;

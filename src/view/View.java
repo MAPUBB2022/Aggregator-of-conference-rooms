@@ -1,9 +1,10 @@
 package view;
 
 import interfaces.AdRepositoryInterface;
-import jdk.jfr.FlightRecorder;
+import interfaces.UserControllerInterface;
 import model.*;
 import model.Calendar;
+import repo.AdRepository;
 import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
 
@@ -32,9 +33,19 @@ public class View {
         ArrayList<String> credentials = new ArrayList<>();
 
         System.out.println("Select:");
-        System.out.println("1-event organiser");
-        System.out.println("2-business owner");
-        String userType = input.nextLine(); //nextLine() - citeste un string a user-ului
+        boolean ok = true;
+        String userType = "";
+        while (ok) {
+            System.out.println("1-event organiser");
+            System.out.println("2-business owner");
+            userType = input.nextLine(); //nextLine() - citeste un string a user-ului
+            if(userType.equals("1") || userType.equals("2")) {
+                ok = false;
+            }
+            else {
+                wrongNumber();
+            }
+        }
 
         System.out.println("username: ");
         String username = input.nextLine();
@@ -134,9 +145,9 @@ public class View {
         Scanner input=new Scanner(System.in);
 
         System.out.println("Select: ");
-        System.out.println("1. Create offer");
-        System.out.println("2. Send an offer");
-        System.out.println("3. Show all ads");
+        System.out.println("1. Show all ads");
+        System.out.println("2. Show accepted offers");
+        System.out.println("3. Create an offer");
         System.out.println("4. Log out ");
         int option=input.nextInt();
 
@@ -151,57 +162,44 @@ public class View {
     public void showProduct(Product product){
         System.out.println("Product: " + product.getName());
         System.out.println("Rating: " + product.getRating());
-        System.out.println("Description: " + product.getDescription());
+        System.out.println("Description: " + product.getDescription() + "\n");
+
     }
 
     public void showCalendar(Calendar calendar){
 
     }
     public void showAd(Ad ad) {
-        System.out.println("Ad" + ad.getIdAd());
+        System.out.println("Ad Id: " + ad.getIdAd());
         showProduct(ad.getProduct());
         showCalendar(ad.getCalendar());
     }
     public void showOffer(Offer offer) {
-        System.out.println("Offer" + offer.getIdOffer());
+        System.out.println("Offer Id: " + offer.getIdOffer());
         System.out.println("Starting Date: " + offer.getStartingDate());
         System.out.println("Ending Date: " + offer.getEndingDate());
         System.out.println("Description: " + offer.getDescription());
-        //System.out.println("Description: " + offer.getDescription());
-        for (Ad ad:offer.getAdsInOffer()) {
-            System.out.println("Ad" + ad.getIdAd()+"-Product "+ad.getProduct().getName());
-        }
+        System.out.println("Ad Id: " + offer.getAdInOffer().getIdAd()+"-Product "+offer.getAdInOffer().getProduct().getName());
     }
-   /* public void printBusinessOwners(){
-        for(BusinessOwnerRepository businessOwner : BusinessOwnerRepository.getInstance()) {
-            System.out.println("First "+businessOwner.getFirstName());
-            System.out.println("Lastname "+businessOwner.getLastName());
-            System.out.println("Username "+businessOwner.getUsername());
-        }
-    }*/
-
-    public Ad createAdView() {
+       public Ad createAdView() {
         Scanner input = new Scanner(System.in);
-        //aici trebuie incremetat id ul automat cand se face un obiect nou
 
-        System.out.println("id: ");
-        Integer id = input.nextInt();
         System.out.println("Product: ");
         Integer option = selectTypeOfProduct();
         Calendar calendar = new Calendar();
         if(option == 1) {
             Hall hall = createHallView();
-            Ad ad = new Ad(id, hall, calendar);
+            Ad ad = new Ad(hall, calendar);
             return ad;
         }
         if(option == 2) {
             DJ dj = createDJView();
-            Ad ad = new Ad(id, dj, calendar);
+            Ad ad = new Ad(dj, calendar);
             return ad;
         }
         if(option == 3) {
             CandyBar candyBar = createCandyBarView();
-            Ad ad = new Ad(id, candyBar, calendar);
+            Ad ad = new Ad(candyBar, calendar);
             return ad;
         }
         return null;
@@ -284,15 +282,12 @@ public class View {
             System.out.println("3- Candybar");
             option = input.nextInt();
             if(option == 1) {
-                //Hall hall = createHallView();
                 return 1;
             }
             if(option == 2) {
-                //DJ dj = createDJView();
                 return 2;
             }
             if (option == 3) {
-              //  CandyBar candyBar = createCandyBarView();
                 return 3;
             }
             wrongNumber();
@@ -301,48 +296,68 @@ public class View {
         somethingWentWrong();
         return null;
     }
-    public Offer createOfferView() throws ParseException {
+    public Offer createOfferView(AdRepository ads) throws ParseException {
         Scanner input = new Scanner(System.in);
-        //aici trebuie incremetat id ul automat cand se face un obiect nou
-
-        System.out.println("id: ");
-        Integer id = input.nextInt();
         System.out.println("Start Date: ");
-        String start_date=input.nextLine();
+        String startDate=input.nextLine();
         System.out.println("End Date: ");
-        String end_date=input.nextLine();
+        String endDate=input.nextLine();
         System.out.println("Description: ");
         String description=input.nextLine();
         System.out.println("Add ads: ");
-        ArrayList<Ad> adsInOffer = new ArrayList<>();
+        Integer adInOfferId = input.nextInt();
 
-        SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        //SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
 
         //String dateInString = "7-Jun-2013"; -> string de forma aceasta vom da ca DI
-        Date start = formatter.parse(start_date);
-        Date end=formatter.parse(end_date);
+//        String start = formatter.parse(start_date);
+//        Date end=formatter.parse(end_date);
 
-        boolean ok=true;
-        while (ok) {
-            String ad = input.nextLine();
+//        boolean ok=true;
+//        while (ok) {
+//            Integer adId = input.nextInt();
+//
+//            //ad trebuie convertit la Ad pt ca adsInOffer e o lista de Ad, nu de stringuri
+//
+//            //var array = ad.split(" ");
+//            //String getIdFromString=array[0];
+//            //Integer idd=Integer.parseInt(getIdFromString);
+//
+//            adsInOfferIds.add(adId);
+//        }
 
-            //ad trebuie convertit la Ad pt ca adsInOffer e o lista de Ad, nu de stringuri
+        Ad adInOffer = ads.findById(adInOfferId);
 
-            //var array = ad.split(" ");
-            //String getIdFromString=array[0];
-            //Integer idd=Integer.parseInt(getIdFromString);
+//        for(Integer adId : adsInOfferIds) {
+//            if(ads.findById(adId) != null) {
+//                adsInOffer.add(ads.findById(adId));
+//            }
+//        }
 
-            if(ad.equals(" ") || ad.equals("\n") || ad.equals("")) {
-                ok = false;
-            }
-            adsInOffer.add(ad);
-        }
-
-        Offer new_offer=new Offer(id,start,end,description,adsInOffer);
+        Offer new_offer=new Offer(startDate,endDate,description,adInOffer);
         return new_offer;
 
     }
 
+    public boolean acceptOfferView() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Do you want to accept an offer? (Yes/No)");
+        while(true) {
+            String answer = input.nextLine();
+            if (answer.equals("yes") || answer.equals("y") || answer.equals("Yes"))
+                return true;
+            if (answer.equals("no") || answer.equals("n") || answer.equals("No"))
+                return false;
+            System.out.println("Please select Yes or No");
+        }
+
+    }
 
 
+    public Integer chooseOfferToAccept(){
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please enter the id of the offer you want to accept");
+        return input.nextInt();
+
+    }
 }
