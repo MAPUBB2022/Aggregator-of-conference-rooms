@@ -1,10 +1,7 @@
 package Controller;
 
 import interfaces.UserControllerInterface;
-import model.Ad;
-import model.BusinessOwner;
-import model.Offer;
-import model.Organiser;
+import model.*;
 import repo.AdRepository;
 import repo.OrganiserRepository;
 import view.View;
@@ -17,7 +14,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     private final View view;
 
     public BusinessOwnerController(View view) {
-        this.view= view;
+        this.view = view;
     }
 
     public void setBusinessOwner(BusinessOwner businessOwner) {
@@ -30,71 +27,73 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         return businessOwner;
     }
 
-    public Integer showReceivedOffers() {
-        //daca lista e goala => ret 1
-        if(businessOwner.getReceivedOffers().isEmpty()) {
-            view.noOffersReceived();
-            return 1;
-        }
-        for (Offer offer : businessOwner.getReceivedOffers()) {
-            view.showOffer(offer);
-        }
-        return 2;
-    }
 
     public void showAds() {
-        for(Ad ad: businessOwner.getAds()) {
+        for (Ad ad : businessOwner.getAds()) {
             view.showAd(ad);
         }
     }
 
-    public void acceptOffer(Offer offerAccepted, OrganiserRepository organisers) {
-
-        Organiser organiser = organisers.findByOfferId(offerAccepted.getIdOffer());
-
-        if(organiser != null) {
-            businessOwner.getAcceptedOffers().add(offerAccepted);
-            businessOwner.getAcceptedOffers().remove(offerAccepted);
-            organiser.getAcceptedOffers().add(offerAccepted);
-            organiser.getSentOffers().remove(offerAccepted);
-        }
-        else {
-            view.somethingWentWrong();
-        }
-    }
-
-    public Offer findOffer() {
-        Integer idOffer = view.chooseOfferToAccept();
-        for(Offer offer : businessOwner.getReceivedOffers()) {
-            if(offer.getIdOffer() == idOffer)
-                return offer;
-        }
-        return null;
-    }
-
-    public void createAd(AdRepository ads) {
+    public void createAd() {
         Ad ad = view.createAdView();
-        businessOwner.add(ad);
-        ads.add(ad);
+        businessOwner.getAds().add(ad);
+        AdRepository.getInstance().add(ad);
 
     }
 
-    public void receivedOffersMenu(OrganiserRepository organisers) {
+    public void declineMessage(Message message) {
+        message.setStatus(Status.DECLINED);
+    }
 
-        int option = showReceivedOffers();
+    public void makeOffer(Message message) {
+        Offer offer = (Offer) view.createOfferView(message);
+        Organiser organiser = OrganiserRepository.getInstance().findByMessageId(message.getIdMessage());
+        organiser.getReceivedOffers().add(offer);
+        businessOwner.getSentOffers().add(offer);
+        offer.setStatus(Status.SENT);
+        message.setStatus(Status.ACCEPTED);
+    }
 
-        if(option == 2) {
-            boolean answer = view.acceptOfferView();
-            if (answer) {
-                Offer offer = findOffer();
-                if (offer != null) {
-                    acceptOffer(offer, organisers);
+    public void allMessagesMenu() {
+        if (businessOwner.getRequestedOffers().isEmpty()) {
+            view.noMessages();
+        }
+        for (Message message : businessOwner.getRequestedOffers()) {
+            view.showMessage(message);
+
+        }
+
+    }
+    public void newMessagesMenu() {
+        if (businessOwner.getRequestedOffers().isEmpty()) {
+            view.noNewMessages();
+        }
+        for (Message message : businessOwner.getRequestedOffers()) {
+            if(message.getStatus().equals(Status.SENT)) {
+                view.showMessage(message);
+                view.askOfferMaking();
+                boolean answer = view.answer();
+                if (answer) {
+                    makeOffer(message);
+                    view.offerSent();
                 } else {
-                    view.somethingWentWrong();
-                    receivedOffersMenu(organisers);
+                    declineMessage(message);
+                    view.messageDeclined();
                 }
             }
         }
     }
 
+    public void showOffers() {
+        if(businessOwner.getSentOffers().isEmpty()) {
+            view.noOffers();
+        }
+        else {
+            for (Offer offer : businessOwner.getSentOffers()) {
+                view.showOffer(offer);
+            }
+        }
+    }
+
 }
+

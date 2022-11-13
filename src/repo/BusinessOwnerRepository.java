@@ -46,9 +46,9 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
        CandyBar candybar1=new CandyBar("AllDelicious","very good",sweets);
        Ad ad3=new Ad(candybar1, new Calendar());
 
-       businessOwner1.add(ad1);
-       businessOwner2.add(ad2);
-       businessOwner2.add(ad3);
+       businessOwner1.getAds().add(ad1);
+       businessOwner2.getAds().add(ad2);
+       businessOwner2.getAds().add(ad3);
 
        AdRepository.getInstance().add(ad1);
        AdRepository.getInstance().add(ad2);
@@ -66,13 +66,13 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
     }
 
     @Override
-    public void add(BusinessOwner entity){
-        for(BusinessOwner b: this.allBusinessOwner){
-            if(b.getUsername().equals(entity.getUsername())){
+    public void add(BusinessOwner newBusinessOwner){
+        for(BusinessOwner businessOwner: this.allBusinessOwner){
+            if(businessOwner.getUsername().equals(newBusinessOwner.getUsername())){
                 return;
             }
         }
-        this.allBusinessOwner.add(entity);
+        this.allBusinessOwner.add(newBusinessOwner);
     }
 
     @Override
@@ -81,11 +81,13 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
     }
 
     @Override
-    public void update(String username, BusinessOwner new_businessOwner){
-        for(BusinessOwner b: this.allBusinessOwner){
-            if(b.getUsername().equals(username)){
-              this.allBusinessOwner.remove(b);
-              this.allBusinessOwner.add(new_businessOwner);
+    public void update(String username, BusinessOwner newBusinessOwner){
+        for(BusinessOwner businessOwner: this.allBusinessOwner){
+            if(businessOwner.getUsername().equals(username)){
+              businessOwner.setFirstName(newBusinessOwner.getFirstName());
+              businessOwner.setLastName(newBusinessOwner.getLastName());
+              businessOwner.setUsername(newBusinessOwner.getUsername());
+              businessOwner.setPassword(newBusinessOwner.getPassword());
               break;
             }
         }

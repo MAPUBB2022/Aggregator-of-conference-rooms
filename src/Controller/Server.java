@@ -1,16 +1,10 @@
 package Controller;
 
-import interfaces.AdRepositoryInterface;
-import model.Ad;
-import model.BusinessOwner;
-import model.Offer;
-import model.Organiser;
 import repo.AdRepository;
 import repo.BusinessOwnerRepository;
 import repo.OrganiserRepository;
 import view.View;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 public class Server {
@@ -18,7 +12,6 @@ public class Server {
     private final View view;
     private OrganiserRepository organisers;
     private BusinessOwnerRepository businessOwners;
-    private AdRepository ads;
     private OrganiserController organiserController;
     private BusinessOwnerController businessOwnerController;
 
@@ -26,12 +19,11 @@ public class Server {
         this.view = new View();
         this.organisers = OrganiserRepository.getInstance();
         this.businessOwners = BusinessOwnerRepository.getInstance();
-        this.ads = AdRepository.getInstance();
         this.organiserController = new OrganiserController(this.view);
         this.businessOwnerController = new BusinessOwnerController(this.view);
     }
 
-    public void login() throws ParseException {
+    public void login() {
         ArrayList<String> credentials = view.loginView();
 
         if (credentials.get(0).equals("1") && organisers.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) {
@@ -46,7 +38,7 @@ public class Server {
 
     }
 
-    public void signUp() throws ParseException {
+    public void signUp() {
         ArrayList<String> credentials = view.signupView();
         if(credentials.get(0).equals("1")) {
             OrganiserRepository.getInstance().add(organiserController.createUser(credentials));
@@ -63,23 +55,31 @@ public class Server {
         }
     }
 
-    public void businessOwnerMenu2(String username) throws ParseException {
+    public void businessOwnerMenu2(String username) {
         int option = view.businessOwnerMenu();
         businessOwnerController.setBusinessOwner(businessOwners.findById(username));
 
         if(option == 1) {
-            businessOwnerController.receivedOffersMenu(organisers);
-            businessOwnerMenu2(username);
-        }
-        else if(option == 2) {
             businessOwnerController.showAds();
             businessOwnerMenu2(username);
         }
+        else if(option == 2) {
+            businessOwnerController.newMessagesMenu();
+            businessOwnerMenu2(username);
+        }
         else if(option == 3) {
-            businessOwnerController.createAd(ads);
+            businessOwnerController.allMessagesMenu();
             businessOwnerMenu2(username);
         }
         else if(option == 4) {
+            businessOwnerController.showOffers();
+            businessOwnerMenu2(username);
+        }
+        else if(option == 5) {
+            businessOwnerController.createAd();
+            businessOwnerMenu2(username);
+        }
+        else if(option == 6) {
             runProgram();
         }
         else {
@@ -89,30 +89,40 @@ public class Server {
 
     }
 
-    public void organiserMenu2(String username) throws ParseException {
+    public void organiserMenu2(String username) {
         int option = view.organiserMenu();
         organiserController.setOrganiser(organisers.findById(username));
 
-        if(option==1){
-            organiserController.showAllAds(ads);
+        if(option == 1){
+            organiserController.showAllAds();
             organiserMenu2(username);
         }
-        else if(option==2) {
-            organiserController.showAcceptedOffers();
+        else if(option == 2) {
+            organiserController.showNewOffersMenu();
             organiserMenu2(username);
         }
-        else if(option==3) {
-            organiserController.createOffer(ads, businessOwners);
+        else if(option == 3) {
+            organiserController.showSentMessages();
             organiserMenu2(username);
         }
-        else if(option==4){
+        else if(option == 4) {
+            organiserController.showReceivedOffers();
+            organiserMenu2(username);
+        }
+        else if(option == 5){
+            organiserController.sendMessage();
+            view.messageSent();
+            organiserMenu2(username);
+        }
+        else if(option == 6) {
             runProgram();
-        }else {
+        }
+        else {
             view.wrongNumber();
             organiserMenu2(username); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
         }
     }
-    public void runProgram() throws ParseException {
+    public void runProgram(){
         while(true) {
             int option = view.welcomeView();
             if(option == 1) {

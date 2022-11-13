@@ -33,13 +33,13 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
     }
 
     @Override
-    public void add(Organiser entity) {
-        for( Organiser o: this.allOrganisers){
-            if(o.getUsername().equals(entity.getUsername())) {
+    public void add(Organiser newOrganiser) {
+        for( Organiser organiser: this.allOrganisers){
+            if(organiser.getUsername().equals(newOrganiser.getUsername())) {
                 return;
             }
         }
-        this.allOrganisers.add(entity);
+        this.allOrganisers.add(newOrganiser);
     }
 
     @Override
@@ -79,19 +79,14 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
             if (organiser.getPassword().equals(password)) {
                 return organiser;
             }
-//            else {
-//                System.out.println("Incorrect password");
-//                return null;
-//            }
         }
-       // System.out.println("User doesn't exist");
         return null;
     }
 
-    public Organiser findByOfferId(Integer idOffer) {
+    public Organiser findByMessageId(Integer idOffer) {
         for(Organiser organiser : this.allOrganisers) {
-            for(Offer offer: organiser.getSentOffers()) {
-                if(offer.getIdOffer() == idOffer) {
+            for(Message message: organiser.getRequestedOffers()) {
+                if(message.getIdMessage() == idOffer) {
                     return organiser;
                 }
             }

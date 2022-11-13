@@ -1,11 +1,15 @@
 package model;
 
+import java.util.ArrayList;
+
 public abstract class User {
 
     private String firstName;
     private String lastName;
     private String username;
     private String password;
+
+    private ArrayList<Message> requestedOffers = new ArrayList<>();
 
     public User(String firstName, String lastName, String username, String password) {
         this.firstName = firstName;
@@ -46,4 +50,7 @@ public abstract class User {
         this.password = password;
     }
 
+    public ArrayList<Message> getRequestedOffers() {
+        return requestedOffers;
+    }
 }

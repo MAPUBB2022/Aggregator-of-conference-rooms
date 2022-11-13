@@ -125,17 +125,17 @@ public class View {
         System.out.println("Please choose a valid option");
     }
 
-    public void adsView(AdRepositoryInterface ads) {
-    }
 
     public int businessOwnerMenu() {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Select: ");
-        System.out.println("1. Received offers");
-        System.out.println("2. Your Ads");
-        System.out.println("3. Create ad");
-        System.out.println("4. Log out");
+        System.out.println("1. Show your Ads");
+        System.out.println("2. Show new Messages");
+        System.out.println("3. Show all Messages");
+        System.out.println("4. Show all Offers");
+        System.out.println("5. Create ad");
+        System.out.println("6. Log out");
         int option = input.nextInt();
 
         return option;
@@ -146,9 +146,11 @@ public class View {
 
         System.out.println("Select: ");
         System.out.println("1. Show all ads");
-        System.out.println("2. Show accepted offers");
-        System.out.println("3. Create an offer");
-        System.out.println("4. Log out ");
+        System.out.println("2. Show new offers"); // dupa status
+        System.out.println("3. Show sent messages");
+        System.out.println("4. Show all offers");
+        System.out.println("5. Send message to ask for an offer");
+        System.out.println("6. Log out ");
         int option=input.nextInt();
 
         return option;
@@ -175,11 +177,23 @@ public class View {
         showCalendar(ad.getCalendar());
     }
     public void showOffer(Offer offer) {
-        System.out.println("Offer Id: " + offer.getIdOffer());
+        System.out.println("Offer Id: " + offer.getIdMessage());
+        System.out.println("Status: " + offer.getStatus());
+        System.out.println("Price: " + offer.getPrice());
         System.out.println("Starting Date: " + offer.getStartingDate());
         System.out.println("Ending Date: " + offer.getEndingDate());
         System.out.println("Description: " + offer.getDescription());
-        System.out.println("Ad Id: " + offer.getAdInOffer().getIdAd()+"-Product "+offer.getAdInOffer().getProduct().getName());
+        System.out.println("Ad Id: " + offer.getAd().getIdAd()+"-Product "+offer.getAd().getProduct().getName()+"\n");
+    }
+
+    public void showMessage(Message message) {
+        System.out.println("Ad Id: " + message.getAd().getIdAd()+"-Product "+message.getAd().getProduct().getName());
+        System.out.println("Status: " + message.getStatus());
+        System.out.println("Starting Date: " + message.getStartingDate());
+        System.out.println("Ending Date: " + message.getEndingDate());
+        System.out.println("Guests' number: " + message.getGuests());
+        System.out.println("Description: " + message.getDescription()+"\n");
+
     }
        public Ad createAdView() {
         Scanner input = new Scanner(System.in);
@@ -296,52 +310,91 @@ public class View {
         somethingWentWrong();
         return null;
     }
-    public Offer createOfferView(AdRepository ads) throws ParseException {
+    public Message createMessageView() {
         Scanner input = new Scanner(System.in);
+        Ad adInMessage = null;
+
         System.out.println("Start Date: ");
-        String startDate=input.nextLine();
+        String startDate = input.nextLine();
         System.out.println("End Date: ");
         String endDate=input.nextLine();
+
         System.out.println("Description: ");
         String description=input.nextLine();
-        System.out.println("Add ads: ");
-        Integer adInOfferId = input.nextInt();
 
-        //SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy", Locale.ENGLISH);
+        while (true) {
+            System.out.println("AdId: ");
+            Integer adInOfferId = input.nextInt();
+            adInMessage = AdRepository.getInstance().findById(adInOfferId);
+            if (adInMessage != null) {
+                break;
+            } else {
+                System.out.println("Please enter a valid Id!");
+            }
+        }
 
-        //String dateInString = "7-Jun-2013"; -> string de forma aceasta vom da ca DI
-//        String start = formatter.parse(start_date);
-//        Date end=formatter.parse(end_date);
+        Integer guests = null;
+        while (true) {
+            System.out.println("Number of guests: ");
+            guests = input.nextInt();
+            if (adInMessage.getProduct() instanceof Hall) {
+                if(guests <= ((Hall) adInMessage.getProduct()).getCapacity()) {
+                    break;
+                }
+                else {
+                    System.out.println("Too many guest for the Hall");
+                    System.out.println("Maximum capacity is "+ ((Hall) adInMessage.getProduct()).getCapacity());
+                    System.out.println("Please enter a smaller value if you want an offer!");
+                }
+            }
+            else {
+                break;
+            }
+        }
 
-//        boolean ok=true;
-//        while (ok) {
-//            Integer adId = input.nextInt();
-//
-//            //ad trebuie convertit la Ad pt ca adsInOffer e o lista de Ad, nu de stringuri
-//
-//            //var array = ad.split(" ");
-//            //String getIdFromString=array[0];
-//            //Integer idd=Integer.parseInt(getIdFromString);
-//
-//            adsInOfferIds.add(adId);
-//        }
+        Message newMessage=new Message(adInMessage, startDate, endDate, guests, description);
 
-        Ad adInOffer = ads.findById(adInOfferId);
-
-//        for(Integer adId : adsInOfferIds) {
-//            if(ads.findById(adId) != null) {
-//                adsInOffer.add(ads.findById(adId));
-//            }
-//        }
-
-        Offer new_offer=new Offer(startDate,endDate,description,adInOffer);
-        return new_offer;
+        return newMessage;
 
     }
 
-    public boolean acceptOfferView() {
+    public Offer createOfferView(Message message) {
         Scanner input = new Scanner(System.in);
+
+        System.out.println("Description: ");
+        String description = input.nextLine();
+
+        System.out.println("Price: ");
+        Integer price = input.nextInt();
+
+        Offer newOffer = new Offer(message.getAd(), message.getStartingDate(), message.getEndingDate(), message.getGuests(), description, price);
+
+        return newOffer;
+    }
+
+    public Integer chooseOfferToAccept(){
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please enter the id of the offer you want to accept");
+        return input.nextInt();
+
+    }
+
+    public void noNewMessages() {
+        System.out.println("Nothing new...");
+        System.out.println("Check again later\n");
+    }
+
+
+    public void askOfferMaking() {
+        System.out.println("Do you want to make an offer? (Yes/No)");
+    }
+
+    public void askOfferAccepting() {
         System.out.println("Do you want to accept an offer? (Yes/No)");
+    }
+
+    public boolean answer() {
+        Scanner input = new Scanner(System.in);
         while(true) {
             String answer = input.nextLine();
             if (answer.equals("yes") || answer.equals("y") || answer.equals("Yes"))
@@ -350,14 +403,36 @@ public class View {
                 return false;
             System.out.println("Please select Yes or No");
         }
-
     }
 
+    public void noMessages() {
+        System.out.println("You don't have any messages");
+        System.out.println("Check again later\n");
+    }
 
-    public Integer chooseOfferToAccept(){
-        Scanner input = new Scanner(System.in);
-        System.out.println("Please enter the id of the offer you want to accept");
-        return input.nextInt();
+    public void noOffers() {
+        System.out.println("You haven't made any offer yet\n");
+    }
 
+    public void noSentMessages() {
+        System.out.println("You haven't sent any messages yet\n");
+    }
+    public void messageSent() {
+        System.out.println("Message sent successfully!\n");
+    }
+
+    public void offerSent() {
+        System.out.println("Offer sent successfully!\n");
+    }
+
+    public void messageDeclined() {
+        System.out.println("Message declined!\n");
+    }
+    public void offerDeclined() {
+        System.out.println("Offer declined!\n");
+    }
+
+    public void offerAccepted() {
+        System.out.println("Offer accepted!\n");
     }
 }

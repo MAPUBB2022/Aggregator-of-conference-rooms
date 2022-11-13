@@ -41,11 +41,11 @@ public class AdRepository implements AdRepositoryInterface {
     }
 
     @Override
-    public void update(Integer id, Ad new_ad) {
+    public void update(Integer id, Ad newAd) {
         for( Ad ad : this.allAds) {
             if(ad.getIdAd().equals(id)) {
-                ad.setProduct(new_ad.getProduct());
-                ad.setCalendar(new_ad.getCalendar());
+                ad.setProduct(newAd.getProduct());
+                ad.setCalendar(newAd.getCalendar());
                 break;
             }
         }

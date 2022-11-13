@@ -1,15 +1,11 @@
 package Controller;
 
 import interfaces.UserControllerInterface;
-import model.Ad;
-import model.BusinessOwner;
-import model.Offer;
-import model.Organiser;
+import model.*;
 import repo.AdRepository;
 import repo.BusinessOwnerRepository;
 import view.View;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 
 public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
@@ -32,32 +28,69 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return organiser;
     }
 
-    public void createOffer(AdRepository ads, BusinessOwnerRepository businessOwners) throws ParseException {
-        Offer offer = view.createOfferView(ads);
-        organiser.getSentOffers().add(offer);
-
-        Integer idAd = offer.getAdInOffer().getIdAd();
-        BusinessOwner businessOwner = businessOwners.findByAdId(idAd);
-        businessOwner.getReceivedOffers().add(offer);
-            }
-
-    public void sendOffer(BusinessOwner businessOwner, Offer offer){
-        businessOwner.getReceivedOffers().add(offer);
-    }
-
-    public void showAllAds(AdRepository ads) {
-        for(Ad ad: ads.getAllAds()) {
+    public void showAllAds() {
+        for(Ad ad: AdRepository.getInstance().getAllAds()) {
             view.showAd(ad);
         }
     }
+    public void acceptOffer(Offer offer) {
+        offer.setStatus(Status.ACCEPTED);
+    }
 
+    public void declineOffer(Offer offer) {
+        offer.setStatus(Status.DECLINED);
+    }
 
-    public void showAcceptedOffers() {
-        if(organiser.getAcceptedOffers().isEmpty()) {
-            System.out.println("You don't have offers accepted");
+    public void showNewOffersMenu() {
+        if(organiser.getReceivedOffers().isEmpty()) {
+            view.noNewMessages();
         }
         else {
-            for (Offer offer : organiser.getAcceptedOffers()) {
+            for (Offer offer : organiser.getReceivedOffers()) {
+                if (offer.getStatus().equals(Status.SENT)) {
+                    view.showOffer(offer);
+                    view.askOfferAccepting();
+                    boolean answer = view.answer();
+                    if (answer) {
+                        acceptOffer(offer);
+                        view.offerAccepted();
+                    } else {
+                        declineOffer(offer);
+                        view.offerDeclined();
+                    }
+                }
+            }
+        }
+    }
+
+
+
+    public void sendMessage() {
+        Message message = view.createMessageView();
+        Integer adId = message.getAd().getIdAd();
+        BusinessOwner businessOwner = BusinessOwnerRepository.getInstance().findByAdId(adId);
+        businessOwner.getRequestedOffers().add(message);
+        organiser.getRequestedOffers().add(message);
+        message.setStatus(Status.SENT);
+    }
+
+    public void showSentMessages() {
+        if(organiser.getRequestedOffers().isEmpty()) {
+            view.noSentMessages();
+        }
+        else {
+            for (Message message : organiser.getRequestedOffers()) {
+                view.showMessage(message);
+            }
+        }
+    }
+
+    public void showReceivedOffers() {
+        if(organiser.getReceivedOffers().isEmpty()) {
+            view.noSentMessages();
+        }
+        else {
+            for (Offer offer : organiser.getReceivedOffers()) {
                 view.showOffer(offer);
             }
         }
