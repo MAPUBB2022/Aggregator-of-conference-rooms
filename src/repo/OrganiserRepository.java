@@ -22,6 +22,9 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
 
     }
 
+    public ArrayList<Organiser> getAllOrganisers() {
+        return allOrganisers;
+    }
 
     public static void populateOrganisers(){
         Organiser organiser1 = new Organiser("Paul", "Bop", "paulstefan002", "9082");
@@ -61,6 +64,7 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
         }
     }
 
+    //metoda folosita la login si la signUp ptr a vedea ca nu mai exista user ul
     @Override
     public Organiser findById(String username) {
         for( Organiser organiser: this.allOrganisers) {
@@ -83,10 +87,12 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
         return null;
     }
 
-    public Organiser findByMessageId(Integer idOffer) {
+    //ret un organiser dupa id-ul unei oferte
+    //metoda ce ne ajuta sa aflam din mesaj cine e org
+    public Organiser findOrganiserByMessageId(Integer idOffer) {
         for(Organiser organiser : this.allOrganisers) {
             for(Message message: organiser.getRequestedOffers()) {
-                if(message.getIdMessage() == idOffer) {
+                if(message.getIdMessage().equals(idOffer)) {
                     return organiser;
                 }
             }

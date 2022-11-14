@@ -1,10 +1,11 @@
 package model;
 
+//cls Message are un anunt, (idMessage,count), descr,startDate,endDate,nrInvitati, status
 public class Message {
 
     private Ad ad;
 
-    private final Integer idMessage;
+    private final Integer idMessage; //final -> poate fi initializ doar 1 data oriunde in clasa + valoarea variab nu poate fi schimbata
     private static Integer counter = 1;
     private String description;
     private String startingDate;
@@ -76,3 +77,4 @@ public class Message {
     }
 
 }
+

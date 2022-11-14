@@ -28,6 +28,7 @@ public class View {
         return option;
     }
 
+    //met ce returneaza un string de credentiale format din DI (tipUser + username + passw)
     public ArrayList<String> loginView() {
         Scanner input = new Scanner(System.in);
         ArrayList<String> credentials = new ArrayList<>();
@@ -52,6 +53,7 @@ public class View {
         System.out.println("password: ");
         String password = input.nextLine();
 
+        //adaugam in string ul de credentials, tip user(b.o/org) + username + passw
         credentials.add(userType);
         credentials.add(username);
         credentials.add(password);
@@ -62,6 +64,7 @@ public class View {
         System.out.println("Wrong username or password please try again");
     }
 
+    //metoda ce ret un string de credentiale obtinute din signUp (cu validarile necesare de username daca acesta a mai fost folosit sau nu)
     public ArrayList<String> signupView() {
         Scanner input = new Scanner(System.in);
         System.out.println("Sign up form: ");
@@ -84,7 +87,7 @@ public class View {
             if(BusinessOwnerRepository.getInstance().findById(username) != null || OrganiserRepository.getInstance().findById(username) != null) {
                 System.out.println("Unavailable username, please choose another one");
             }
-            else { //gaseste un username nou
+            else { //gaseste un username nou, adica il accepta pe cel introdus
                 ok = false;
             }
         }
@@ -103,7 +106,7 @@ public class View {
                 ok = false;
             }
             else {
-                System.out.println("Wrong answer! Please choose 1 or 2");
+                wrongNumber();
             }
         }
 
@@ -135,7 +138,9 @@ public class View {
         System.out.println("3. Show all Messages");
         System.out.println("4. Show all Offers");
         System.out.println("5. Create ad");
-        System.out.println("6. Log out");
+        System.out.println("6. Delete ad");
+        System.out.println("7. Modify ad");
+        System.out.println("8 Log out");
         int option = input.nextInt();
 
         return option;
@@ -158,6 +163,7 @@ public class View {
     }
 
     public void noOffersReceived() {
+
         System.out.println("You haven't received any offer");
     }
 
@@ -186,6 +192,7 @@ public class View {
         System.out.println("Ad Id: " + offer.getAd().getIdAd()+"-Product "+offer.getAd().getProduct().getName()+"\n");
     }
 
+    //metoda org pe care o trimite b.o.
     public void showMessage(Message message) {
         System.out.println("Ad Id: " + message.getAd().getIdAd()+"-Product "+message.getAd().getProduct().getName());
         System.out.println("Status: " + message.getStatus());
@@ -195,12 +202,98 @@ public class View {
         System.out.println("Description: " + message.getDescription()+"\n");
 
     }
-       public Ad createAdView() {
+
+    public Integer selectTypeOfProduct() {
+
+        boolean ok = true;
+        Scanner input = new Scanner(System.in);
+        Integer option = null;
+
+
+        while (ok) {
+            System.out.println("Choose the type of the service you offer, modify or delete: ");
+            System.out.println("1- Hall renting");
+            System.out.println("2- Dj");
+            System.out.println("3- Candybar");
+            option = input.nextInt();
+            if(option == 1) {
+                return 1;
+            }
+            if(option == 2) {
+                return 2;
+            }
+            if (option == 3) {
+                return 3;
+            }
+            wrongNumber();
+
+        }
+        somethingWentWrong();
+        return null;
+    }
+    public Ad createAdView() {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Product: ");
+
+        //se ret tipul de produs pe care il ofera businessOwner ul
+        System.out.println("Enter the values of the product you offer: ");
         Integer option = selectTypeOfProduct();
         Calendar calendar = new Calendar();
+        if(option == 1) {
+            Hall hall = createHallView();
+            Ad ad = new Ad(hall, calendar);
+            return ad;
+        }
+        if(option == 2) {
+            DJ dj = createDJView();
+            Ad ad = new Ad(dj, calendar);
+            return ad;
+        }
+        if(option == 3) {
+            CandyBar candyBar = createCandyBarView();
+            Ad ad = new Ad(candyBar, calendar);
+            return ad;
+        }
+        return null;
+    }
+
+    public Ad deleteAdView(){
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Product: ");
+
+        //se ret tipul de produs pe care il sterge businessOwner ul
+        Integer option = selectTypeOfProduct();
+        Calendar calendar = new Calendar();
+        System.out.println("Enter the new values of the product you delete: ");
+        if(option == 1) {
+            Hall hall = createHallView();
+            Ad ad = new Ad(hall, calendar);
+            return ad;
+        }
+        if(option == 2) {
+            DJ dj = createDJView();
+            Ad ad = new Ad(dj, calendar);
+            return ad;
+        }
+        if(option == 3) {
+            CandyBar candyBar = createCandyBarView();
+            Ad ad = new Ad(candyBar, calendar);
+            return ad;
+        }
+        return null;
+    }
+
+    public Ad modifyAdView(){
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Product: ");
+
+        //se ret tipul de produs pe care il modifica businessOwner ul
+        Integer option = selectTypeOfProduct();
+        Calendar calendar = new Calendar();
+        System.out.println("Enter the new values of the product you modify: ");
         if(option == 1) {
             Hall hall = createHallView();
             Ad ad = new Ad(hall, calendar);
@@ -240,6 +333,7 @@ public class View {
         String name = input.nextLine();
         System.out.println("Description: ");
         String description = input.nextLine();
+
         // facut teste sa raspunda corect
         boolean lights = false;
         System.out.println("Lights: yes/no");
@@ -281,35 +375,6 @@ public class View {
         return candyBar;
     }
 
-
-    public Integer selectTypeOfProduct() {
-
-        boolean ok = true;
-        Scanner input = new Scanner(System.in);
-        Integer option = null;
-
-
-        while (ok) {
-            System.out.println("Choose the type of the service you offer: ");
-            System.out.println("1- Hall renting");
-            System.out.println("2- Dj");
-            System.out.println("3- Candybar");
-            option = input.nextInt();
-            if(option == 1) {
-                return 1;
-            }
-            if(option == 2) {
-                return 2;
-            }
-            if (option == 3) {
-                return 3;
-            }
-            wrongNumber();
-
-        }
-        somethingWentWrong();
-        return null;
-    }
     public Message createMessageView() {
         Scanner input = new Scanner(System.in);
         Ad adInMessage = null;
@@ -325,11 +390,11 @@ public class View {
         while (true) {
             System.out.println("AdId: ");
             Integer adInOfferId = input.nextInt();
-            adInMessage = AdRepository.getInstance().findById(adInOfferId);
-            if (adInMessage != null) {
+            adInMessage = AdRepository.getInstance().findById(adInOfferId); //se ad in adInMessage ad ul cautat dupa id dat ca DI
+            if (adInMessage != null) { //daca s-a gasit id-ul se opreste bucla
                 break;
             } else {
-                System.out.println("Please enter a valid Id!");
+                System.out.println("Please enter a valid Id!"); //daca se da un id gresit se tot repeta pana gaseste unul existent
             }
         }
 
@@ -337,8 +402,8 @@ public class View {
         while (true) {
             System.out.println("Number of guests: ");
             guests = input.nextInt();
-            if (adInMessage.getProduct() instanceof Hall) {
-                if(guests <= ((Hall) adInMessage.getProduct()).getCapacity()) {
+            if (adInMessage.getProduct() instanceof Hall) { //daca prod din anuntul din msj e o instanta a salii, caci doar la sala ai nr de invitati
+                if(guests <= ((Hall) adInMessage.getProduct()).getCapacity()) { //daca incap invitatii in sala
                     break;
                 }
                 else {
@@ -347,7 +412,7 @@ public class View {
                     System.out.println("Please enter a smaller value if you want an offer!");
                 }
             }
-            else {
+            else { //daca prod din anuntul din msj NU e o instanta a salii
                 break;
             }
         }
@@ -358,6 +423,7 @@ public class View {
 
     }
 
+    //oferta de creare e un msj cu un pret si o descriere
     public Offer createOfferView(Message message) {
         Scanner input = new Scanner(System.in);
 
@@ -372,6 +438,7 @@ public class View {
         return newOffer;
     }
 
+    //metoda pt organiser de a accepta oferta (dupa id) a businessowner ului facuta de b.o.
     public Integer chooseOfferToAccept(){
         Scanner input = new Scanner(System.in);
         System.out.println("Please enter the id of the offer you want to accept");

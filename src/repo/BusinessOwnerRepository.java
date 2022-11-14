@@ -4,14 +4,13 @@ import model.*;
 import interfaces.BusinessOwnerRepositoryInterface;
 
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface{
 
     private static BusinessOwnerRepository single_instance = null;
-    private List<BusinessOwner> allBusinessOwner = new ArrayList<>();
+    private ArrayList<BusinessOwner> allBusinessOwner = new ArrayList<>();
 
     public static BusinessOwnerRepository getInstance() {
         if (single_instance == null){
@@ -21,7 +20,7 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         return single_instance;
     }
 
-    public List<BusinessOwner> getAllBusinessOwner() {
+    public ArrayList<BusinessOwner> getAllBusinessOwner() {
         return allBusinessOwner;
     }
 
@@ -30,6 +29,7 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         BusinessOwner businessOwner1 = new BusinessOwner("Raul", "Pop", "raulstefan002", "1234");
         BusinessOwner businessOwner2 = new BusinessOwner("Andreea", "Tamas", "andreeatam", "4321");
 
+       //adaugam in memorie businessOwnerii
        BusinessOwnerRepository.getInstance().add(businessOwner1);
        BusinessOwnerRepository.getInstance().add(businessOwner2);
 
@@ -46,10 +46,12 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
        CandyBar candybar1=new CandyBar("AllDelicious","very good",sweets);
        Ad ad3=new Ad(candybar1, new Calendar());
 
+       //adaugam anunturile "din memorie" la businessOwnerii "din memorie"
        businessOwner1.getAds().add(ad1);
        businessOwner2.getAds().add(ad2);
        businessOwner2.getAds().add(ad3);
 
+       //adaugam in memorie anunturi
        AdRepository.getInstance().add(ad1);
        AdRepository.getInstance().add(ad2);
        AdRepository.getInstance().add(ad3);
@@ -115,10 +117,11 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         return null;
     }
 
-    public BusinessOwner findByAdId(Integer idAd) {
+    //ret businessOwner-ul coresp id-ului unui Ad
+    public BusinessOwner findBusinessOwnerByAdId(Integer idAd) {
         for(BusinessOwner businessOwner : this.allBusinessOwner) {
             for(Ad ad: businessOwner.getAds()) {
-                if(ad.getIdAd() == idAd) {
+                if(ad.getIdAd().equals(idAd)) {
                     return businessOwner;
                 }
             }
