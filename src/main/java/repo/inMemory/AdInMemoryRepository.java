@@ -1,4 +1,4 @@
-package repo;
+package repo.inMemory;
 
 import interfaces.AdRepositoryInterface;
 import model.Ad;
@@ -7,14 +7,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AdRepository implements AdRepositoryInterface {
+public class AdInMemoryRepository implements AdRepositoryInterface {
 
-    private static AdRepository single_instance = null;
+    private static AdInMemoryRepository single_instance = null;
     private List<Ad> allAds = new ArrayList<>();
 
-   public static AdRepository getInstance() {
+   public static AdInMemoryRepository getInstance() {
        if(single_instance == null) {
-           single_instance = new AdRepository();
+           single_instance = new AdInMemoryRepository();
        }
        return single_instance;
    }

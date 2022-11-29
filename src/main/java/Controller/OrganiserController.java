@@ -2,27 +2,33 @@ package Controller;
 
 import interfaces.UserControllerInterface;
 import model.*;
-import repo.AdRepository;
-import repo.BusinessOwnerRepository;
-import repo.OrganiserRepository;
-import view.View;
+import repo.inMemory.AdInMemoryRepository;
+import repo.inMemory.BusinessOwnerInMemoryRepository;
+import repo.inMemory.OrganiserInMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
 
+    private static OrganiserController single_instance = null;
     private Organiser organiser;
-
-    private final View view;
-
-    public OrganiserController(View view) {
-
-        this.view = view;
+    public static OrganiserController getInstance() {
+        if (single_instance == null){
+            single_instance = new OrganiserController();
+        }
+        return single_instance;
+    }
+    public OrganiserController() {
     }
 
-    public void setOrganiser(Organiser organiser) {
+    public Organiser getOrganiser() {
+        return organiser;
+    }
 
+
+    public void setOrganiser(Organiser organiser) {
         this.organiser = organiser;
     }
 
@@ -32,10 +38,8 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return organiser;
     }
 
-    public void showAllAds() {
-        for(Ad ad: AdRepository.getInstance().getAllAds()) {
-            view.showAd(ad);
-        }
+    public List<Ad> getAds() {
+        return AdInMemoryRepository.getInstance().getAllAds();
     }
 
     //se seteaza statusul unei oferte la ACCEPTED
@@ -50,55 +54,18 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         offer.setStatus(Status.DECLINED);
     }
 
-    //se afiseaza dupa status
-    public void showNewOffersMenu() {
-        if(organiser.getReceivedOffers().isEmpty()) { //daca lista de oferte primite a org e goala
-            view.noNewMessages(); //nu exita msj nou
-        }
-        else {
-            for (Offer offer : organiser.getReceivedOffers()) { //pt fiecare oferta din lista de oferte primite a org
-                if (offer.getStatus().equals(Status.SENT)) { //daca starea ofertei e SENT
-                    view.showOffer(offer); //se afis oferta
-                    view.askOfferAccepting(); //apare msj daca vrei sa accepti oferta
-                    boolean answer = view.answer();
-                    if (answer) { //daca rasp e true
-                        acceptOffer(offer); //status ul ofertei devine ACCEPTED
-                        view.offerAccepted(); //apare msj cu oferta acceptata
-                    } else {
-                        declineOffer(offer); //status ul ofertei devine DECLINED
-                        view.offerDeclined(); //apare msj cu oferta respinsa
-                    }
-                }
-            }
-        }
+    public boolean checkNewReceivedOffers() {
+        return organiser.getReceivedOffers().isEmpty();
     }
 
-    public void showSentMessages() {
-        if(organiser.getRequestedOffers().isEmpty()) { //daca lista de oferte cerute a org e goala
-            view.noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
-        }
-        else { //daca lista nu e goala
-            for (Message message : organiser.getRequestedOffers()) { //pt fiecare msj din lista de oferte cerute a org
-                view.showMessage(message); //se afis msj
-            }
-        }
+    public boolean checkRequestedOffers() {
+        return organiser.getRequestedOffers().isEmpty();
     }
 
-    public void showReceivedOffers() {
-        if(organiser.getReceivedOffers().isEmpty()) {
-            view.noSentMessages();
-        }
-        else {
-            for (Offer offer : organiser.getReceivedOffers()) {
-                view.showOffer(offer);
-            }
-        }
-    }
 
-    public void sendMessage() {
-        Message message = view.createMessageView(); //se creaza msj org catre b.o.
+    public void sendMessage(Message message) {
         Integer adId = message.getAd().getIdAd(); //se salveaaza id ul anuntului din anuntul din msj
-        BusinessOwner businessOwner = BusinessOwnerRepository.getInstance().findBusinessOwnerByAdId(adId); //se salveaza b.o. coresp id ului din anunt
+        BusinessOwner businessOwner = BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByAdId(adId); //se salveaza b.o. coresp id ului din anunt
         businessOwner.getRequestedOffers().add(message); //adaugam in lista de oferte cerute a b.o. msj
         organiser.getRequestedOffers().add(message); //adaugam in lista de oferte cerute a org msj
         message.setStatus(Status.SENT); //setam statusul msj la SENT
@@ -106,7 +73,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
 
     //sorteaza lista de org dupa comparatorul de username a org
     public static ArrayList<Organiser> sort(){
-        ArrayList<Organiser> allOrganisers=OrganiserRepository.getInstance().getAllOrganisers();
+        ArrayList<Organiser> allOrganisers= OrganiserInMemoryRepository.getInstance().getAllOrganisers();
         Collections.sort(allOrganisers, new NameComparatorOrganiser());
 
         return allOrganisers;
@@ -140,7 +107,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     //filtrare org dupa nr total de oferte primite; nr total de oferte primite a unui org trb sa fie >= un nr oarecare
     public ArrayList<Organiser>filterByNumberOfSentMessages(int NoReceivedOffers) {
         ArrayList<Organiser> filteredOrganisers = new ArrayList<>(Collections.emptyList());
-        for (Organiser o : OrganiserRepository.getInstance().getAllOrganisers()) {
+        for (Organiser o : OrganiserInMemoryRepository.getInstance().getAllOrganisers()) {
             if (o.getReceivedOffers().size() >= NoReceivedOffers) {
                 filteredOrganisers.add(o);
             }
@@ -151,10 +118,10 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     //se afiseaza toate mesajele ale unui anumit org
     public ArrayList<Message> showMessagesByRandomOrg(Organiser o){
         ArrayList<Message> returnedMessages = new ArrayList<>(Collections.emptyList());
-        for (Organiser organiser : OrganiserRepository.getInstance().getAllOrganisers()) //cauta in lista de org pe cel dat ca parametru
+        for (Organiser organiser : OrganiserInMemoryRepository.getInstance().getAllOrganisers()) //cauta in lista de org pe cel dat ca parametru
             if(organiser.getFirstName().equals(o.getFirstName()) && organiser.getLastName().equals(o.getLastName())) { //daca il gaseste
                 for(Message m: o.getRequestedOffers()) { //pt fiecare msj a org dat ca param (gasit)
-                    view.showMessage(m);
+                   // view.showMessage(m);
                     returnedMessages.add(m);
                 }
             }

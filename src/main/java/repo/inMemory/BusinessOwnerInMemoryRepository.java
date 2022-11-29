@@ -1,4 +1,4 @@
-package repo;
+package repo.inMemory;
 
 import model.*;
 import interfaces.BusinessOwnerRepositoryInterface;
@@ -7,14 +7,14 @@ import interfaces.BusinessOwnerRepositoryInterface;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface{
+public class BusinessOwnerInMemoryRepository implements BusinessOwnerRepositoryInterface{
 
-    private static BusinessOwnerRepository single_instance = null;
+    private static BusinessOwnerInMemoryRepository single_instance = null;
     private ArrayList<BusinessOwner> allBusinessOwner = new ArrayList<>();
 
-    public static BusinessOwnerRepository getInstance() {
+    public static BusinessOwnerInMemoryRepository getInstance() {
         if (single_instance == null){
-            single_instance = new BusinessOwnerRepository();
+            single_instance = new BusinessOwnerInMemoryRepository();
             populateBusinessOwners();
         }
         return single_instance;
@@ -30,8 +30,8 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
         BusinessOwner businessOwner2 = new BusinessOwner("Andreea", "Tamas", "andreeatam", "4321");
 
        //adaugam in memorie businessOwnerii
-       BusinessOwnerRepository.getInstance().add(businessOwner1);
-       BusinessOwnerRepository.getInstance().add(businessOwner2);
+       BusinessOwnerInMemoryRepository.getInstance().add(businessOwner1);
+       BusinessOwnerInMemoryRepository.getInstance().add(businessOwner2);
 
        Hall hall1 =new Hall("Sala 1","Evenimente exclusiviste","Cluj",150);
        Ad ad1=new Ad(hall1, new Calendar());
@@ -52,9 +52,9 @@ public class BusinessOwnerRepository implements BusinessOwnerRepositoryInterface
        businessOwner2.getAds().add(ad3);
 
        //adaugam in memorie anunturi
-       AdRepository.getInstance().add(ad1);
-       AdRepository.getInstance().add(ad2);
-       AdRepository.getInstance().add(ad3);
+       AdInMemoryRepository.getInstance().add(ad1);
+       AdInMemoryRepository.getInstance().add(ad2);
+       AdInMemoryRepository.getInstance().add(ad3);
 
 
 

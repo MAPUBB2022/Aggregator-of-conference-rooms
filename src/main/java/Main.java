@@ -6,10 +6,8 @@ import java.text.ParseException;
 public class Main {
     public static void main(String[] args) {
 
-     Server server = new Server();
-
-     server.runProgram();
-
+     View view = new View();
+     view.runProgram();
 
     }
 }

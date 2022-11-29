@@ -1,4 +1,4 @@
-package repo;
+package repo.inMemory;
 
 import interfaces.OrganiserRepositoryInterface;
 import model.*;
@@ -6,16 +6,16 @@ import model.*;
 import java.util.ArrayList;
 
 
-public class OrganiserRepository implements OrganiserRepositoryInterface {
+public class OrganiserInMemoryRepository implements OrganiserRepositoryInterface {
 
     private final ArrayList<Organiser> allOrganisers = new ArrayList<>();
 
-    private static OrganiserRepository single_instance = null;
+    private static OrganiserInMemoryRepository single_instance = null;
 
-    public static OrganiserRepository getInstance() {
+    public static OrganiserInMemoryRepository getInstance() {
 
         if(single_instance == null) {
-            single_instance = new OrganiserRepository();
+            single_instance = new OrganiserInMemoryRepository();
             populateOrganisers();
         }
         return single_instance;
@@ -30,8 +30,8 @@ public class OrganiserRepository implements OrganiserRepositoryInterface {
         Organiser organiser1 = new Organiser("Paul", "Bop", "paulstefan002", "9082");
         Organiser organiser2 = new Organiser("Andrei", "Malinas", "andreim", "1321");
 
-       OrganiserRepository.getInstance().add(organiser1);
-       OrganiserRepository.getInstance().add(organiser2);
+       OrganiserInMemoryRepository.getInstance().add(organiser1);
+       OrganiserInMemoryRepository.getInstance().add(organiser2);
 
     }
 
