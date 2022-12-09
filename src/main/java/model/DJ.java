@@ -1,5 +1,10 @@
 package model;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "djs")
 public class DJ extends Product {
     private boolean lights;
     private boolean stereo;
@@ -8,6 +13,10 @@ public class DJ extends Product {
         super(name, description);
         this.lights = lights;
         this.stereo = stereo;
+    }
+
+    public DJ() {
+
     }
 
     public boolean isLights() {

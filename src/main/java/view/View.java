@@ -4,9 +4,13 @@ import Controller.BusinessOwnerController;
 import Controller.OrganiserController;
 import Controller.Server;
 import model.*;
-import model.Calendar;
+import repo.inMemory.BusinessOwnerInMemoryRepository;
+import repo.inMemory.OrganiserInMemoryRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Scanner;
 
 public class View {
 
@@ -118,7 +122,7 @@ public class View {
         server.createBusinessOwnerInController(username); //se cauta b.o dupa id in lista de b.o si se set noul b.o (cel gasit)
 
         if(option == 1) {
-           showBusinessOwnerAds();
+           showBusinessOwnerProducts();
         }
         else if(option == 2) {
             newMessagesMenu();
@@ -130,13 +134,13 @@ public class View {
             showOffers();
         }
         else if(option == 5) {
-            createAdMenu();
+            createProductMenu();
         }
         else if(option==6){
-            deleteAdMenu();
+            deleteProductMenu();
         }
         else if(option==7) {
-            modifyAdMenu();
+            modifyProductMenu();
         }
         else if(option == 8) {
             runProgram();
@@ -151,7 +155,7 @@ public class View {
         if (businessOwnerController.checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
             noNewMessages(); //nu exista msj nou
         }
-        for (Message message : businessOwnerController.getBusinessOwner().getRequestedOffers()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
+        for (Message message : businessOwnerController.getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
             if(message.getStatus().equals(Status.SENT)) { //daca starea msj e de SENT
                 showMessage(message); //vezi msj
                 askOfferMaking(); //apare msj daca vrei sa faci o oferta
@@ -176,7 +180,7 @@ public class View {
         if (businessOwnerController.checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
             noMessages(); //nu exista mesaje primite
         }
-        for (Message message : businessOwnerController.getBusinessOwner().getRequestedOffers()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
+        for (Message message : businessOwnerController.getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
             showMessage(message); //se arata msj de forma.. pe care il trimite org b.o.
         }
 
@@ -193,20 +197,20 @@ public class View {
         }
     }
 
-    public void createAdMenu() {
-        Ad createdAd = createAdView();
-        businessOwnerController.createAd(createdAd);
+    public void createProductMenu() {
+        Product createdProduct = createProductView();
+        businessOwnerController.createProduct(createdProduct);
     }
 
-    public void deleteAdMenu(){
-        Integer adId = getBusinessOwnerAdId();
-        businessOwnerController.deleteAd(adId);
+    public void deleteProductMenu(){
+        Integer idProduct = getBusinessOwnerProductId();
+        businessOwnerController.deleteProduct(idProduct);
     }
 
-    public void modifyAdMenu() {
-        Integer adId = getBusinessOwnerAdId();
-        Ad newAd = createAdView();
-        businessOwnerController.modifyAd(adId, newAd);
+    public void modifyProductMenu() {
+        Integer idProduct = getBusinessOwnerProductId();
+        Product newProduct = createProductView();
+        businessOwnerController.modifyProduct(idProduct, newProduct);
     }
 
     public void organiserMenu(String username) {
@@ -215,7 +219,7 @@ public class View {
        server.createOrganiserInController(username); //se cauta org dupa id in lista de org si se set noul org (cel gasit)
 
         if(option == 1){
-            showAds();
+            showProducts();
         }
         else if(option == 2) {
            showNewOffersMenu();
@@ -267,7 +271,7 @@ public class View {
             noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
         }
         else { //daca lista nu e goala
-            for (Message message : organiserController.getOrganiser().getRequestedOffers()) { //pt fiecare msj din lista de oferte cerute a org
+            for (Message message : organiserController.getOrganiser().getSentMessages()) { //pt fiecare msj din lista de oferte cerute a org
                 showMessage(message); //se afis msj
             }
         }
@@ -362,13 +366,13 @@ public class View {
         Scanner input = new Scanner(System.in);
 
         System.out.println("Select: ");
-        System.out.println("1. Show your Ads");
+        System.out.println("1. Show your Products");
         System.out.println("2. Show new Messages");
         System.out.println("3. Show all Messages");
         System.out.println("4. Show all Offers");
-        System.out.println("5. Create ad");
-        System.out.println("6. Delete ad");
-        System.out.println("7. Modify ad");
+        System.out.println("5. Create product");
+        System.out.println("6. Delete product");
+        System.out.println("7. Modify product");
         System.out.println("8 Log out");
         int option = input.nextInt();
 
@@ -379,7 +383,7 @@ public class View {
         Scanner input=new Scanner(System.in);
 
         System.out.println("Select: ");
-        System.out.println("1. Show all ads");
+        System.out.println("1. Show all products");
         System.out.println("2. Show new offers"); // dupa status
         System.out.println("3. Show sent messages");
         System.out.println("4. Show all offers");
@@ -392,52 +396,43 @@ public class View {
     }
 
     public void showProduct(Product product){
+        System.out.println("Id:" + product.getId());
         System.out.println("Product: " + product.getName());
         System.out.println("Rating: " + product.getRating());
         System.out.println("Description: " + product.getDescription() + "\n");
 
     }
 
-    public void showCalendar(Calendar calendar){
 
-    }
-
-    public void showAds() {
-        List<Ad> ads = organiserController.getAds();
-        for(Ad ad: ads) {
-            showAd(ad);
+    public void showProducts() {
+        List<Product> products = organiserController.getProducts();
+        for(Product product: products) {
+            showProduct(product);
         }
     }
 
-    public void showBusinessOwnerAds() {
-        List<Ad> ads = businessOwnerController.getBusinessOwner().getAds();
-        if(ads.isEmpty()) {
-            System.out.println("You don't have services listed!\n");
+    public void showBusinessOwnerProducts() {
+        List<Product> products = businessOwnerController.getBusinessOwner().getProducts();
+        if(products.isEmpty()) {
+            System.out.println("You don't have products listed!\n");
         }
         else {
-            for (Ad ad : ads) {
-                showAd(ad);
+            for (Product product : products) {
+                showProduct(product);
             }
         }
     }
-    public void showAd(Ad ad) {
-        System.out.println("Ad Id: " + ad.getIdAd());
-        showProduct(ad.getProduct());
-        showCalendar(ad.getCalendar());
-    }
     public void showOffer(Offer offer) {
-        System.out.println("Offer Id: " + offer.getIdMessage());
+        System.out.println("Offer Id: " + offer.getId());
         System.out.println("Status: " + offer.getStatus());
         System.out.println("Price: " + offer.getPrice());
-        System.out.println("Starting Date: " + offer.getStartingDate());
-        System.out.println("Ending Date: " + offer.getEndingDate());
         System.out.println("Description: " + offer.getDescription());
-        System.out.println("Ad Id: " + offer.getAd().getIdAd()+"-Product "+offer.getAd().getProduct().getName()+"\n");
+        System.out.println("Product Id: " + offer.getProduct().getId()+"-Product "+offer.getProduct().getName()+"\n");
     }
 
     //metoda org pe care o trimite b.o.
     public void showMessage(Message message) {
-        System.out.println("Ad Id: " + message.getAd().getIdAd()+"-Product "+message.getAd().getProduct().getName());
+        System.out.println("Product Id: " + message.getProduct().getId()+"-Product "+message.getProduct().getName());
         System.out.println("Status: " + message.getStatus());
         System.out.println("Starting Date: " + message.getStartingDate());
         System.out.println("Ending Date: " + message.getEndingDate());
@@ -474,58 +469,54 @@ public class View {
         somethingWentWrong();
         return null;
     }
-    public Ad createAdView() {
+    public Product createProductView() {
         System.out.println("Product: ");
 
         //se ret tipul de produs pe care il ofera businessOwner ul
         System.out.println("Enter the values of the product you offer: ");
         Integer option = selectTypeOfProduct();
-        Calendar calendar = new Calendar();
         if(option == 1) {
-            Hall hall = createHallView();
-            return new Ad(hall, calendar);
+            return createHallView();
         }
         if(option == 2) {
-            DJ dj = createDJView();
-            return new Ad(dj, calendar);
+            return createDJView();
         }
         if(option == 3) {
-            CandyBar candyBar = createCandyBarView();
-            return new Ad(candyBar, calendar);
+            return createCandyBarView();
         }
         return null;
     }
 
-    public Ad getAdView() {
+    public Product getProductView() {
 
         Scanner input = new Scanner(System.in);
-        System.out.println("Please insert the ad Id: ");
+        System.out.println("Please insert the product Id: ");
 
-        int idAd = input.nextInt();
-        Ad ad = server.getAd(idAd);
+        int idProduct = input.nextInt();
+        Product product = server.getProduct(idProduct);
 
-        while (ad == null) {
+        while (product == null) {
             System.out.println("Please insert a valid Id: ");
-            showAds();
-            idAd = input.nextInt();
-            ad = server.getAd(idAd);
+            showProducts();
+            idProduct = input.nextInt();
+            product = server.getProduct(idProduct);
         }
-        return ad;
+        return product;
     }
 
-    public Integer getBusinessOwnerAdId() {
+    public Integer getBusinessOwnerProductId() {
 
         Scanner input = new Scanner(System.in);
-        System.out.println("Please insert the ad Id: ");
+        System.out.println("Please insert the product Id: ");
 
-        int idAd = input.nextInt();
+        int idProduct = input.nextInt();
 
-        while (!businessOwnerController.isBusinessOwnerAd(idAd)) {
+        while (!businessOwnerController.isBusinessOwnerProduct(idProduct)) {
             System.out.println("Please insert a valid Id: ");
-            showBusinessOwnerAds();
-            idAd = input.nextInt();
+            showBusinessOwnerProducts();
+            idProduct = input.nextInt();
         }
-        return idAd;
+        return idProduct;
     }
 
     public Hall createHallView() {
@@ -574,13 +565,14 @@ public class View {
         String description = input.nextLine();
         System.out.println("Add sweets: ");
         boolean ok = true;
-        ArrayList<String> sweets = new ArrayList<>();
+        ArrayList<Sweet> sweets = new ArrayList<>();
 
         while (ok) {
-            String sweet = input.nextLine();
-            if(sweet.equals(" ") || sweet.equals("\n") || sweet.equals("")) {
+            String sweetString = input.nextLine();
+            if(sweetString.equals(" ") || sweetString.equals("\n") || sweetString.equals("")) {
                 ok = false;
             }
+            Sweet sweet = new Sweet(sweetString);
             sweets.add(sweet);
         }
         return new CandyBar(name, description, sweets);
@@ -597,19 +589,19 @@ public class View {
         System.out.println("Description: ");
         String description=input.nextLine();
 
-        Ad adInMessage = getAdView();
+        Product productInMessage = getProductView();
 
         Integer guests = null;
         while (true) {
             System.out.println("Number of guests: ");
             guests = input.nextInt();
-            if (adInMessage.getProduct() instanceof Hall) { //daca prod din anuntul din msj e o instanta a salii, caci doar la sala ai nr de invitati
-                if(guests <= ((Hall) adInMessage.getProduct()).getCapacity()) { //daca incap invitatii in sala
+            if (productInMessage instanceof Hall) { //daca prod din anuntul din msj e o instanta a salii, caci doar la sala ai nr de invitati
+                if(guests <= (((Hall) productInMessage).getCapacity())) { //daca incap invitatii in sala
                     break;
                 }
                 else {
                     System.out.println("Too many guest for the Hall");
-                    System.out.println("Maximum capacity is "+ ((Hall) adInMessage.getProduct()).getCapacity());
+                    System.out.println("Maximum capacity is "+ ((Hall) productInMessage).getCapacity());
                     System.out.println("Please enter a smaller value if you want an offer!");
                 }
             }
@@ -618,7 +610,8 @@ public class View {
             }
         }
 
-        return new Message(adInMessage, startDate, endDate, guests, description);
+
+        return new Message(productInMessage, OrganiserController.getInstance().getOrganiser(),  BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByProductId(productInMessage.getId()), startDate, endDate, guests, description);
 
     }
 
@@ -632,7 +625,7 @@ public class View {
         System.out.println("Price: ");
         Integer price = input.nextInt();
 
-        return new Offer(message.getAd(), message.getStartingDate(), message.getEndingDate(), message.getGuests(), description, price);
+        return new Offer(BusinessOwnerController.getInstance().getBusinessOwner(), OrganiserInMemoryRepository.getInstance().findOrganiserByMessageId(message.getIdMessage()), message.getProduct(), price, description);
 
     }
 

@@ -1,12 +1,25 @@
 package model;
 
+import javax.persistence.*;
+
 //cls Message are un anunt, (idMessage,count), descr,startDate,endDate,nrInvitati, status
+@Entity
+@Table(name = "messages")
 public class Message {
 
-    private Ad ad;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idMessage; //final -> poate fi initializ doar 1 data oriunde in clasa + valoarea variab nu poate fi schimbata
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "idProduct")
+    private Product product;
 
-    private final Integer idMessage; //final -> poate fi initializ doar 1 data oriunde in clasa + valoarea variab nu poate fi schimbata
-    private static Integer counter = 1;
+    @ManyToOne
+    @JoinColumn(name = "idOrganiser")
+    private Organiser sender;
+    @ManyToOne
+    @JoinColumn(name = "idBusinessOwner")
+    private BusinessOwner receiver;
     private String description;
     private String startingDate;
     private String endingDate;
@@ -14,26 +27,40 @@ public class Message {
 
     private Status status;
 
-    public Message(Ad ad, String startingDate, String endingDate, Integer guests, String description) {
-        this.idMessage = counter++;
-        this.ad = ad;
+    public Message(Product product, Organiser sender, BusinessOwner receiver, String startingDate, String endingDate, Integer guests, String description) {
+        this.product = product;
+        this.sender = sender;
+        this.receiver = receiver;
         this.startingDate = startingDate;
         this.endingDate = endingDate;
         this.guests = guests;
         this.description = description;
+
         this.status = null;
+    }
+
+    public Message() {
+
+    }
+
+    public Organiser getSender() {
+        return sender;
+    }
+
+    public BusinessOwner getReceiver() {
+        return receiver;
     }
 
     public Integer getIdMessage() {
         return idMessage;
     }
 
-    public Ad getAd() {
-        return ad;
+    public Product getProduct() {
+        return product;
     }
 
-    public void setAd(Ad ad) {
-        this.ad = ad;
+    public void setProduct(Product product) {
+        this.product = product;
     }
 
     public String getDescription() {

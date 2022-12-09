@@ -1,6 +1,18 @@
 package model;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name = "products")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Product {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
+    private static Integer counter = 1;
     private String name;
     private Integer rating;
     private String description;
@@ -9,6 +21,15 @@ public abstract class Product {
         this.name = name;
         this.rating = null;
         this.description = description;
+        this.id = counter++;
+    }
+
+    public Product() {
+
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     public String getName() {

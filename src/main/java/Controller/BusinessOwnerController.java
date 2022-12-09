@@ -2,11 +2,12 @@ package Controller;
 
 import interfaces.UserControllerInterface;
 import model.*;
-import repo.inMemory.AdInMemoryRepository;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
 import repo.inMemory.OrganiserInMemoryRepository;
+import repo.inMemory.ProductsInMemoryRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
 
 public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, ArrayList<String>> {
     private static BusinessOwnerController single_instance = null;
@@ -37,29 +38,29 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public boolean checkNewMessages() {
-        return businessOwner.getRequestedOffers().isEmpty();
+        return businessOwner.getReceivedMessages().isEmpty();
     }
     public boolean checkSentOffers() {
         return businessOwner.getSentOffers().isEmpty();
     }
 
-    public void createAd(Ad newAd) {
-        businessOwner.getAds().add(newAd); //ad in lista de anunturi a b.o. noul anunt
-        AdInMemoryRepository.getInstance().add(newAd); //add ad ul ca sa fie vzt ca 1 sg instanta alaturi de restul
+    public void createProduct(Product newProduct) {
+        businessOwner.getProducts().add(newProduct); //ad in lista de anunturi a b.o. noul anunt
+        ProductsInMemoryRepository.getInstance().add(newProduct); //add ad ul ca sa fie vzt ca 1 sg instanta alaturi de restul
     }
 
     // e ok?
-    public void deleteAd(Integer adId){
-        this.businessOwner.getAds().removeIf(ad -> ad.getIdAd().equals(adId));
-        AdInMemoryRepository.getInstance().remove(adId);
+    public void deleteProduct(Integer idProduct){
+        this.businessOwner.getProducts().removeIf(product -> product.getId().equals(idProduct));
+        ProductsInMemoryRepository.getInstance().remove(idProduct);
     }
 
     // e ok?
-    public void modifyAd(Integer adId, Ad newAd) {
-        for (Ad ad : this.businessOwner.getAds()) {
-            if (ad.getIdAd().equals(adId)) {
-                ad.setProduct(newAd.getProduct());
-                ad.setCalendar(newAd.getCalendar());
+    public void modifyProduct(Integer idProduct, Product newProduct) {
+        for (Product product : this.businessOwner.getProducts()) {
+            if (product.getId().equals(idProduct)) {
+                product.setName(newProduct.getName());
+                product.setDescription(newProduct.getDescription());
             }
         }
     }
@@ -90,7 +91,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     //filtrare dupa mesaje acceptate - e ok dat ca param?
     public ArrayList<Message> filterByAcceptedMessage(){
         ArrayList<Message> filteredMessage=new ArrayList<>(Collections.emptyList());
-        for(Message message:businessOwner.getRequestedOffers()){
+        for(Message message:businessOwner.getReceivedMessages()){
             if(message.getStatus().equals(Status.SENT)){
                 filteredMessage.add(message);
                 //trb si afisat?
@@ -102,7 +103,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     //filtrare dupa mesaje respinse
     public ArrayList<Message> filterByDeclinedMessage(){
         ArrayList<Message> filteredMessage=new ArrayList<>(Collections.emptyList());
-        for(Message message:businessOwner.getRequestedOffers()){
+        for(Message message:businessOwner.getReceivedMessages()){
             if(message.getStatus().equals(Status.DECLINED)){
                 filteredMessage.add(message);
                 //trb si afisat?
@@ -135,9 +136,9 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         return returnedOffers;
     }
 
-    public boolean isBusinessOwnerAd(Integer idAd) {
-        for(Ad ad : businessOwner.getAds()) {
-            if(ad.getIdAd() == idAd) {
+    public boolean isBusinessOwnerProduct(Integer idProduct) {
+        for(Product product : businessOwner.getProducts()) {
+            if(product.getId() == idProduct) {
                 return true;
             }
         }

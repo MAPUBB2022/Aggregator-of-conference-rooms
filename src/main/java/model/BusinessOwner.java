@@ -1,26 +1,44 @@
 package model;
 
-import interfaces.ICrudRepositoryInterface;
-
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
+import java.util.List;
 
+@Entity
+@Table(name = "businessOwners")
 public class BusinessOwner extends User {
-    private ArrayList<Ad> ads;
 
-    private ArrayList<Offer> sentOffers;
+    @OneToMany
+    @JoinColumn(name = "idBusinessOwner")
+    private List<Product> products = new ArrayList<>();
+
+    @OneToMany(mappedBy = "sender")
+    private List<Offer> sentOffers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "receiver")
+    private List<Message> receivedMessages = new ArrayList<>();
 
     public BusinessOwner(String firstName, String lastName, String username, String password) {
         super(firstName, lastName, username, password);
-        this.ads = new ArrayList<>();
-        this.sentOffers = new ArrayList<>();
     }
 
-    public ArrayList<Ad> getAds() {
-        return ads;
+    public BusinessOwner() {
+
     }
 
-    public ArrayList<Offer> getSentOffers() {
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public List<Offer> getSentOffers() {
         return sentOffers;
+    }
+
+    public List<Message> getReceivedMessages() {
+        return receivedMessages;
     }
 
 //    public ArrayList<Offer> getReceivedOffers() {

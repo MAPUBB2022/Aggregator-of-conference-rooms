@@ -1,13 +1,18 @@
 package model;
 
-import interfaces.ICrudRepositoryInterface;
-
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.util.ArrayList;
-
+import java.util.List;
+@Entity
+@Table(name = "organisers")
 public class Organiser extends User {
 
-
-    private ArrayList<Offer> receivedOffers;
+    @OneToMany(mappedBy = "receiver")
+    private List<Offer> receivedOffers = new ArrayList<>();
+    @OneToMany(mappedBy = "sender")
+    private List<Message> sentMessages = new ArrayList<>();
 
 
     public Organiser(String firstName, String lastName, String username, String password) {
@@ -15,8 +20,16 @@ public class Organiser extends User {
         this.receivedOffers = new ArrayList<>();
     }
 
-    public ArrayList<Offer> getReceivedOffers() {
+    public Organiser() {
+
+    }
+
+    public List<Offer> getReceivedOffers() {
         return receivedOffers;
+    }
+
+    public List<Message> getSentMessages() {
+        return sentMessages;
     }
 
 

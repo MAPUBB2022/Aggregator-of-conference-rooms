@@ -1,5 +1,10 @@
 package model;
 
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "halls")
 public class Hall extends Product{
     private String location;
     private Integer capacity;
@@ -8,6 +13,10 @@ public class Hall extends Product{
         super(name, description);
         this.location=location;
         this.capacity=capacity;
+    }
+
+    public Hall() {
+
     }
 
     public String getLocation() {

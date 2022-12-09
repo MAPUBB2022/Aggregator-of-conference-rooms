@@ -1,7 +1,8 @@
 package repo.inMemory;
 
 import interfaces.OrganiserRepositoryInterface;
-import model.*;
+import model.Message;
+import model.Organiser;
 
 import java.util.ArrayList;
 
@@ -89,10 +90,10 @@ public class OrganiserInMemoryRepository implements OrganiserRepositoryInterface
 
     //ret un organiser dupa id-ul unei oferte
     //metoda ce ne ajuta sa aflam din mesaj cine e org
-    public Organiser findOrganiserByMessageId(Integer idOffer) {
+    public Organiser findOrganiserByMessageId(Integer idMessage) {
         for(Organiser organiser : this.allOrganisers) {
-            for(Message message: organiser.getRequestedOffers()) {
-                if(message.getIdMessage().equals(idOffer)) {
+            for(Message message: organiser.getSentMessages()) {
+                if(message.getIdMessage().equals(idMessage)) {
                     return organiser;
                 }
             }

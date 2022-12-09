@@ -1,6 +1,5 @@
 package Controller;
 
-import model.BusinessOwner;
 import model.Organiser;
 
 import java.util.Comparator;

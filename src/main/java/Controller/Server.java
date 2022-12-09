@@ -1,21 +1,21 @@
 package Controller;
 
-import interfaces.AdRepositoryInterface;
 import interfaces.BusinessOwnerRepositoryInterface;
 import interfaces.OrganiserRepositoryInterface;
-import model.Ad;
+import interfaces.ProductRepositoryInterface;
 import model.BusinessOwner;
 import model.Organiser;
-import repo.inMemory.AdInMemoryRepository;
+import model.Product;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
 import repo.inMemory.OrganiserInMemoryRepository;
+import repo.inMemory.ProductsInMemoryRepository;
 
 import java.util.ArrayList;
 
 public class Server {
     private final OrganiserRepositoryInterface organisers = OrganiserInMemoryRepository.getInstance();
     private final BusinessOwnerRepositoryInterface businessOwners = BusinessOwnerInMemoryRepository.getInstance();
-    private final AdRepositoryInterface ads = AdInMemoryRepository.getInstance();
+    private final ProductRepositoryInterface products = ProductsInMemoryRepository.getInstance();
 
     private static Server single_instance = null;
 
@@ -57,8 +57,8 @@ public class Server {
         OrganiserController.getInstance().setOrganiser(organisers.findById(username));
     }
 
-    public Ad getAd(Integer idAd) {
-        return ads.findById(idAd);
+    public Product getProduct(Integer idProduct) {
+        return products.findById(idProduct);
     }
 
     public BusinessOwner getBusinessOwner(String username) {

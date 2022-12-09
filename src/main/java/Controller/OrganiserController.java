@@ -2,9 +2,9 @@ package Controller;
 
 import interfaces.UserControllerInterface;
 import model.*;
-import repo.inMemory.AdInMemoryRepository;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
 import repo.inMemory.OrganiserInMemoryRepository;
+import repo.inMemory.ProductsInMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,8 +38,9 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return organiser;
     }
 
-    public List<Ad> getAds() {
-        return AdInMemoryRepository.getInstance().getAllAds();
+
+    public List<Product> getProducts() {
+        return ProductsInMemoryRepository.getInstance().getAllProducts();
     }
 
     //se seteaza statusul unei oferte la ACCEPTED
@@ -59,15 +60,15 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     }
 
     public boolean checkRequestedOffers() {
-        return organiser.getRequestedOffers().isEmpty();
+        return organiser.getSentMessages().isEmpty();
     }
 
 
     public void sendMessage(Message message) {
-        Integer adId = message.getAd().getIdAd(); //se salveaaza id ul anuntului din anuntul din msj
-        BusinessOwner businessOwner = BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByAdId(adId); //se salveaza b.o. coresp id ului din anunt
-        businessOwner.getRequestedOffers().add(message); //adaugam in lista de oferte cerute a b.o. msj
-        organiser.getRequestedOffers().add(message); //adaugam in lista de oferte cerute a org msj
+        Integer idProduct = message.getProduct().getId(); //se salveaaza id ul anuntului din anuntul din msj
+        BusinessOwner businessOwner = BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByProductId(idProduct); //se salveaza b.o. coresp id ului din anunt
+        businessOwner.getReceivedMessages().add(message); //adaugam in lista de oferte cerute a b.o. msj
+        organiser.getSentMessages().add(message); //adaugam in lista de oferte cerute a org msj
         message.setStatus(Status.SENT); //setam statusul msj la SENT
     }
 
@@ -81,28 +82,28 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     }
 
     //filtrare dupa oferte acceptate - cu param, dar se poate si fara param (vezi in b.o.controller)
-    public static ArrayList<Message> FilterByAcceptedOffer(Organiser organiser){
-        ArrayList<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
-        for (Offer offer : organiser.getReceivedOffers()) {
-            if (offer.getStatus().equals(Status.SENT)) {
-                filteredOffer.add(offer);
-                //trb si afisat?
-            }
-        }
-        return filteredOffer;
-    }
-
-    //filtrare dupa oferte respinse
-    public static ArrayList<Message> FilterByDeclinedOffer(Organiser organiser){
-        ArrayList<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
-        for (Offer offer : organiser.getReceivedOffers()) {
-            if (offer.getStatus().equals(Status.DECLINED)) {
-                filteredOffer.add(offer);
-                //trb si afisat?
-            }
-        }
-        return filteredOffer;
-    }
+//    public static List<Message> FilterByAcceptedOffer(Organiser organiser){
+//        List<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
+//        for (Offer offer : organiser.getReceivedOffers()) {
+//            if (offer.getStatus().equals(Status.SENT)) {
+//                filteredOffer.add(offer);
+//                //trb si afisat?
+//            }
+//        }
+//        return filteredOffer;
+//    }
+//
+//    //filtrare dupa oferte respinse
+//    public static ArrayList<Message> FilterByDeclinedOffer(Organiser organiser){
+//        ArrayList<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
+//        for (Offer offer : organiser.getReceivedOffers()) {
+//            if (offer.getStatus().equals(Status.DECLINED)) {
+//                filteredOffer.add(offer);
+//                //trb si afisat?
+//            }
+//        }
+//        return filteredOffer;
+//    }
 
     //filtrare org dupa nr total de oferte primite; nr total de oferte primite a unui org trb sa fie >= un nr oarecare
     public ArrayList<Organiser>filterByNumberOfSentMessages(int NoReceivedOffers) {
@@ -120,7 +121,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         ArrayList<Message> returnedMessages = new ArrayList<>(Collections.emptyList());
         for (Organiser organiser : OrganiserInMemoryRepository.getInstance().getAllOrganisers()) //cauta in lista de org pe cel dat ca parametru
             if(organiser.getFirstName().equals(o.getFirstName()) && organiser.getLastName().equals(o.getLastName())) { //daca il gaseste
-                for(Message m: o.getRequestedOffers()) { //pt fiecare msj a org dat ca param (gasit)
+                for(Message m: o.getSentMessages()) { //pt fiecare msj a org dat ca param (gasit)
                    // view.showMessage(m);
                     returnedMessages.add(m);
                 }

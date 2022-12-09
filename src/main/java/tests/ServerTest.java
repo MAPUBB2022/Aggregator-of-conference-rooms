@@ -1,12 +1,10 @@
 package tests;
 
-import Controller.OrganiserController;
 import Controller.Server;
-import interfaces.OrganiserRepositoryInterface;
 import org.junit.jupiter.api.Test;
-import repo.inMemory.AdInMemoryRepository;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
 import repo.inMemory.OrganiserInMemoryRepository;
+import repo.inMemory.ProductsInMemoryRepository;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,16 +49,16 @@ class ServerTest {
     }
 
     @Test
-    void getAd() {
+    void getProduct() {
 
         System.out.println("GetAd Tests\n");
 
-        Integer idAd1 = 1;
-        Integer idAd2 = 10;
+        Integer idProduct1 = 1;
+        Integer idProduct2 = 10;
 
-        assertNotEquals(Server.getInstance().getAd(idAd1), null);
-        assertEquals(Server.getInstance().getAd(idAd1), AdInMemoryRepository.getInstance().findById(idAd1));
-        assertNull(Server.getInstance().getAd(idAd2));
+        assertNotEquals(Server.getInstance().getProduct(idProduct1), null);
+        assertEquals(Server.getInstance().getProduct(idProduct1), ProductsInMemoryRepository.getInstance().findById(idProduct1));
+        assertNull(Server.getInstance().getProduct(idProduct2));
 
     }
 

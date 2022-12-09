@@ -1,8 +1,7 @@
 package repo.inMemory;
 
-import model.*;
 import interfaces.BusinessOwnerRepositoryInterface;
-
+import model.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,27 +33,27 @@ public class BusinessOwnerInMemoryRepository implements BusinessOwnerRepositoryI
        BusinessOwnerInMemoryRepository.getInstance().add(businessOwner2);
 
        Hall hall1 =new Hall("Sala 1","Evenimente exclusiviste","Cluj",150);
-       Ad ad1=new Ad(hall1, new Calendar());
 
        DJ dj1 =new DJ("DjAndrei","atmosfera geniala",true,true);
-       Ad ad2=new Ad(dj1, new Calendar());
 
-       List<String> sweets = new ArrayList<>();
-       sweets.add("prajituri");
-       sweets.add("tort");
-       sweets.add("Bhutan");
+        List<Sweet> sweets = new ArrayList<>();
+        Sweet sweet1 = new Sweet("bomboane");
+        Sweet sweet2 = new Sweet("prajituri");
+        Sweet sweet3 = new Sweet("ciocolata");
+        sweets.add(sweet1);
+        sweets.add(sweet2);
+        sweets.add(sweet3);
        CandyBar candybar1=new CandyBar("AllDelicious","very good",sweets);
-       Ad ad3=new Ad(candybar1, new Calendar());
 
        //adaugam anunturile "din memorie" la businessOwnerii "din memorie"
-       businessOwner1.getAds().add(ad1);
-       businessOwner2.getAds().add(ad2);
-       businessOwner2.getAds().add(ad3);
+       businessOwner1.getProducts().add(hall1);
+       businessOwner2.getProducts().add(dj1);
+       businessOwner2.getProducts().add(candybar1);
 
        //adaugam in memorie anunturi
-       AdInMemoryRepository.getInstance().add(ad1);
-       AdInMemoryRepository.getInstance().add(ad2);
-       AdInMemoryRepository.getInstance().add(ad3);
+       ProductsInMemoryRepository.getInstance().add(hall1);
+       ProductsInMemoryRepository.getInstance().add(dj1);
+       ProductsInMemoryRepository.getInstance().add(candybar1);
 
 
 
@@ -118,10 +117,10 @@ public class BusinessOwnerInMemoryRepository implements BusinessOwnerRepositoryI
     }
 
     //ret businessOwner-ul coresp id-ului unui Ad
-    public BusinessOwner findBusinessOwnerByAdId(Integer idAd) {
+    public BusinessOwner findBusinessOwnerByProductId(Integer idProduct) {
         for(BusinessOwner businessOwner : this.allBusinessOwner) {
-            for(Ad ad: businessOwner.getAds()) {
-                if(ad.getIdAd().equals(idAd)) {
+            for(Product product: businessOwner.getProducts()) {
+                if(product.getId().equals(idProduct)) {
                     return businessOwner;
                 }
             }
