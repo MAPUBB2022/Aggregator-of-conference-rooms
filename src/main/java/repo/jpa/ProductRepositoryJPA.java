@@ -38,9 +38,7 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
         Product product = findById(id);
         if (product != null) {
             manager.getTransaction().begin();
-            manager.createNativeQuery("DELETE FROM messages WHERE idProduct = " + id);
-            manager.createNativeQuery("DELETE FROM offers WHERE idProduct = " + id);
-            manager.remove(product);
+            product.setStatusProduct(StatusProduct.INACTIVE);
             manager.getTransaction().commit();
         }
 
@@ -52,7 +50,7 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
         if (product != null) {
             manager.getTransaction().begin();
             if (product.getClass() != newProduct.getClass()) {
-                manager.remove(product);
+                product.setStatusProduct(StatusProduct.INACTIVE);
                 manager.persist(newProduct);
                 manager.getTransaction().commit();
             } else {
@@ -95,20 +93,12 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
         return manager.find(Product.class, id);
     }
 
-    public List<Hall> getHalls() {
-        TypedQuery<Hall> query = manager.createQuery("SELECT h FROM Hall h", Hall.class);
-        List<Hall> halls = query.getResultList();
-        return halls;
+    public List<Product> getProducts() {
+        TypedQuery<Product> query = manager.createQuery("SELECT p FROM Product p WHERE p.statusProduct = :status", Product.class);
+        query.setParameter("status", StatusProduct.ACTIVE);
+        List<Product> products = query.getResultList();
+        return products;
     }
-    public List<CandyBar> getCandyBars() {
-        TypedQuery<CandyBar> query = manager.createQuery("SELECT c FROM CandyBar c", CandyBar.class);
-        List<CandyBar> candyBars = query.getResultList();
-        return candyBars;
-    }
-    public List<DJ> getDjs() {
-        TypedQuery<DJ> query = manager.createQuery("SELECT d FROM DJ d", DJ.class);
-        List<DJ> djs = query.getResultList();
-        return djs;
-    }
+
 
 }

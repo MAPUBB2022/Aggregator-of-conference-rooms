@@ -9,6 +9,7 @@ import repo.jpa.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
@@ -38,15 +39,8 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return new Organiser(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
     }
 
-
-    public List<Hall> getHalls() {
-        return ProductRepositoryJPA.getInstance().getHalls();
-    }
-    public List<CandyBar> getCandyBars() {
-        return ProductRepositoryJPA.getInstance().getCandyBars();
-    }
-    public List<DJ> getDjs() {
-        return ProductRepositoryJPA.getInstance().getDjs();
+    public List<Product> getProducts() {
+        return ProductRepositoryJPA.getInstance().getProducts();
     }
 
     //se seteaza statusul unei oferte la ACCEPTED
@@ -74,60 +68,52 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         MessageRepositoryJPA.getInstance().updateStatus(message, Status.SENT); //setam statusul msj la SENT
     }
 
-    //sorteaza lista de org dupa comparatorul de username a org
-//    public static ArrayList<Organiser> sort(){
-//        ArrayList<Organiser> allOrganisers= OrganiserInMemoryRepository.getInstance().getAllOrganisers();
-//        Collections.sort(allOrganisers, new NameComparatorOrganiser());
-//
-//        return allOrganisers;
-//
-//    }
+    @Override
+    public List<Message> filterByDeclinedMessages(){
 
-    //filtrare dupa oferte acceptate - cu param, dar se poate si fara param (vezi in b.o.controller)
-//    public static List<Message> FilterByAcceptedOffer(Organiser organiser){
-//        List<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
-//        for (Offer offer : organiser.getReceivedOffers()) {
-//            if (offer.getStatus().equals(Status.SENT)) {
-//                filteredOffer.add(offer);
-//                //trb si afisat?
-//            }
-//        }
-//        return filteredOffer;
-//    }
-//
-//    //filtrare dupa oferte respinse
-//    public static ArrayList<Message> FilterByDeclinedOffer(Organiser organiser){
-//        ArrayList<Message> filteredOffer=new ArrayList<>(Collections.emptyList());
-//        for (Offer offer : organiser.getReceivedOffers()) {
-//            if (offer.getStatus().equals(Status.DECLINED)) {
-//                filteredOffer.add(offer);
-//                //trb si afisat?
-//            }
-//        }
-//        return filteredOffer;
-//    }
+        List<Message> messages = OrganiserRepositoryJPA.getInstance().findById(this.username).getSentMessages();
 
-    //filtrare org dupa nr total de oferte primite; nr total de oferte primite a unui org trb sa fie >= un nr oarecare
-    public ArrayList<Organiser>filterByNumberOfSentMessages(int NoReceivedOffers) {
-        ArrayList<Organiser> filteredOrganisers = new ArrayList<>(Collections.emptyList());
-        for (Organiser o : OrganiserInMemoryRepository.getInstance().getAllOrganisers()) {
-            if (o.getReceivedOffers().size() >= NoReceivedOffers) {
-                filteredOrganisers.add(o);
-            }
-        }
-        return filteredOrganisers;
+        return messages.stream().filter(message -> message.getStatus().equals(Status.DECLINED)).toList();
     }
 
-    //se afiseaza toate mesajele ale unui anumit org
-    public ArrayList<Message> showMessagesByRandomOrg(Organiser o){
-        ArrayList<Message> returnedMessages = new ArrayList<>(Collections.emptyList());
-        for (Organiser organiser : OrganiserInMemoryRepository.getInstance().getAllOrganisers()) //cauta in lista de org pe cel dat ca parametru
-            if(organiser.getFirstName().equals(o.getFirstName()) && organiser.getLastName().equals(o.getLastName())) { //daca il gaseste
-                for(Message m: o.getSentMessages()) { //pt fiecare msj a org dat ca param (gasit)
-                   // view.showMessage(m);
-                    returnedMessages.add(m);
-                }
-            }
-        return returnedMessages;
+    @Override
+    public List<Message> filterByAcceptedMessages(){
+
+        List<Message> messages = OrganiserRepositoryJPA.getInstance().findById(this.username).getSentMessages();
+
+        return messages.stream().filter(message -> message.getStatus().equals(Status.ACCEPTED)).toList();
     }
+    @Override
+    public List<Offer> filterByDeclinedOffers(){
+
+        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+
+        return offers.stream().filter(offer -> offer.getStatus().equals(Status.DECLINED)).toList();
+    }
+    @Override
+    public List<Offer> filterByAcceptedOffers(){
+
+        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+
+        return offers.stream().filter(offer -> offer.getStatus().equals(Status.ACCEPTED)).toList();
+    }
+
+    public List<Offer> sortOffersByPriceAscending() {
+        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+
+        return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice)).toList();
+    }
+
+    public List<Offer> sortOffersByPriceDescending() {
+        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+
+        return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice).reversed()).toList();
+    }
+
+    public List<Offer> filterOffersBySenderUsername(String usernameSender) {
+        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        return offers.stream().filter(offer -> offer.getSender().getUsername().equals(usernameSender)).toList();
+    }
+
+
 }

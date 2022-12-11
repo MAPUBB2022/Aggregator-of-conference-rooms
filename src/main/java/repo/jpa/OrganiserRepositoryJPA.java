@@ -63,7 +63,6 @@ public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
         return manager.find(Organiser.class, username);
     }
 
-
     @Override
     public Organiser findByUsernameAndPassword(String username, String password) {
         Organiser organiser = findById(username);
@@ -76,13 +75,7 @@ public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
         return null;
     }
 
-    public BusinessOwner findBusinessOwnerByProductId(Integer idProduct) {
-
-        //facut exceptie pentru query
-        Query query = manager.createNativeQuery("SELECT idBusinessOwner FROM products WHERE id = " + idProduct);
-        return (BusinessOwner) manager.find(BusinessOwner.class, (String)query.getSingleResult());
-
-    }
+//
 
     public Organiser findOrganiserByMessageId(Integer idMessage) {
         Query query = manager.createNativeQuery("SELECT idOrganiser FROM messages WHERE idMessage = " + idMessage);

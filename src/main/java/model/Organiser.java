@@ -1,9 +1,6 @@
 package model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 @Entity
@@ -18,7 +15,7 @@ public class Organiser extends User {
 
     public Organiser(String firstName, String lastName, String username, String password) {
         super(firstName, lastName, username, password);
-        this.receivedOffers = new ArrayList<>();
+
     }
 
     public Organiser() {

@@ -32,8 +32,14 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         return BusinessOwnerRepositoryJPA.getInstance().findById(username);
     }
 
+
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Product> getBusinessOwnerProducts() {
+        List<Product> products = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getProducts();
+        return products.stream().filter(product -> product.getStatusProduct().equals(StatusProduct.ACTIVE)).toList();
     }
 
     @Override
@@ -74,62 +80,41 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         MessageRepositoryJPA.getInstance().updateStatus(message, Status.ACCEPTED);
     }
 
-    //sorteaza lista de b.o. dupa comparatorul de username a b.o.
-//    public static ArrayList<BusinessOwner> sort(){
-//        ArrayList<BusinessOwner> allBusinessOwners= BusinessOwnerInMemoryRepository.getInstance().getAllBusinessOwner();
-//        Collections.sort(allBusinessOwners, new NameComparatorBusinessOwner());
-//
-//        return allBusinessOwners;
-//
-//    }
-//
-//    //filtrare dupa mesaje acceptate - e ok dat ca param?
-//    public ArrayList<Message> filterByAcceptedMessage(){
-//        ArrayList<Message> filteredMessage=new ArrayList<>(Collections.emptyList());
-//        for(Message message:businessOwner.getReceivedMessages()){
-//            if(message.getStatus().equals(Status.SENT)){
-//                filteredMessage.add(message);
-//                //trb si afisat?
-//            }
-//        }
-//        return filteredMessage;
-//    }
-//
-//    //filtrare dupa mesaje respinse
-//    public ArrayList<Message> filterByDeclinedMessage(){
-//        ArrayList<Message> filteredMessage=new ArrayList<>(Collections.emptyList());
-//        for(Message message:businessOwner.getReceivedMessages()){
-//            if(message.getStatus().equals(Status.DECLINED)){
-//                filteredMessage.add(message);
-//                //trb si afisat?
-//            }
-//        }
-//        return filteredMessage;
-//    }
-//
-//    //filtrare b.o. dupa nr total de oferte facute; nr total de oferte a unui b.o. trb sa fie >= un nr oarecare
-//    public ArrayList<BusinessOwner>filterByNumberOfMadeOffers(int NoOffers) {
-//        ArrayList<BusinessOwner> filteredBusinessOwners = new ArrayList<>(Collections.emptyList());
-//        for (BusinessOwner b : BusinessOwnerInMemoryRepository.getInstance().getAllBusinessOwner()) {
-//            if (b.getSentOffers().size() >= NoOffers) {
-//                filteredBusinessOwners.add(b);
-//            }
-//        }
-//        return filteredBusinessOwners;
-//    }
-//
-//    //se afiseaza toate ofertele ale unui anumit b.o.
-//    public ArrayList<Offer> showOffersByRandomBO(BusinessOwner b){
-//        ArrayList<Offer> returnedOffers = new ArrayList<>(Collections.emptyList());
-//        for (BusinessOwner businessOwner : BusinessOwnerInMemoryRepository.getInstance().getAllBusinessOwner()) //cauta in lista de b.o. pe cel dat ca parametru
-//            if(businessOwner.getFirstName().equals(b.getFirstName()) && businessOwner.getLastName().equals(b.getLastName())) { //daca il gaseste
-//                for(Offer o: b.getSentOffers()) { //pt fiecare oferta a b.o dat ca param (gasit)
-//                    //view.showOffer(o);
-//                    returnedOffers.add(o);
-//                }
-//            }
-//        return returnedOffers;
-//    }
+    @Override
+    public List<Message> filterByDeclinedMessages(){
+
+        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+
+        return messages.stream().filter(message -> message.getStatus().equals(Status.DECLINED)).toList();
+    }
+
+    @Override
+    public List<Message> filterByAcceptedMessages(){
+
+        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+
+        return messages.stream().filter(message -> message.getStatus().equals(Status.ACCEPTED)).toList();
+    }
+    @Override
+    public List<Offer> filterByDeclinedOffers(){
+
+        List<Offer> offers = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getSentOffers();
+
+        return offers.stream().filter(offer -> offer.getStatus().equals(Status.DECLINED)).toList();
+    }
+    @Override
+    public List<Offer> filterByAcceptedOffers(){
+
+        List<Offer> offers = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getSentOffers();
+
+        return offers.stream().filter(offer -> offer.getStatus().equals(Status.ACCEPTED)).toList();
+    }
+
+    public List<Message> filterMessagesBySenderUsername(String senderUsername) {
+        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+
+        return messages.stream().filter(message -> message.getSender().getUsername().equals(senderUsername)).toList();
+    }
 
     public boolean isBusinessOwnerProduct(Integer idProduct) {
         for(Product product : getBusinessOwner().getProducts()) {

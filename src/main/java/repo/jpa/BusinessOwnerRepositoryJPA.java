@@ -3,10 +3,9 @@ package repo.jpa;
 import interfaces.BusinessOwnerRepositoryInterface;
 import model.*;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
-import javax.persistence.Query;
+import javax.persistence.*;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterface {
@@ -66,22 +65,10 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
         manager.getTransaction().commit();
     }
 
-//    public void updateMessageList(BusinessOwner businessOwner, Message message) {
-//        BusinessOwner businessOwner1 = manager.merge(businessOwner);
-//        manager.getTransaction().begin();
-//        businessOwner1.getReceivedMessages().add(message);
-//        manager.getTransaction().commit();
-//    }
-//
-//    public void updateOfferList(BusinessOwner businessOwner, Offer offer) {
-//        BusinessOwner businessOwner1 = manager.merge(businessOwner);
-//        manager.getTransaction().begin();
-//        businessOwner1.getSentOffers().add(offer);
-//        manager.getTransaction().commit();
-//    }
 
     @Override
     public BusinessOwner findById(String username) {
+
         return manager.find(BusinessOwner.class, username);
     }
 
@@ -107,9 +94,9 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
 
     }
 
+
     public Integer getSize() {
 
-        //return this.allBusinessOwner.size();
         return  (Integer) (manager.createNativeQuery("SELECT COUNT(products.username) FROM products", Product.class)).getSingleResult();
     }
 }

@@ -47,11 +47,11 @@ public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, In
 
     @Override
     public void updateStatus(Message message, Status newStatus) {
-        Message message1 = manager.merge(message);
         if(message != null) {
             manager.getTransaction().begin();
-            message1.setStatus(newStatus);
+            manager.merge(message).setStatus(newStatus);
             manager.getTransaction().commit();
+            message.setStatus(newStatus);
         }
     }
 

@@ -36,7 +36,7 @@ public class View {
             } else if (option == 2) {
                 signUpMenu();
             } else if (option == 0) {
-                return;
+                break;
             } else {
                 wrongNumber();
             }
@@ -121,8 +121,9 @@ public class View {
     public void businessOwnerMenu(String username) {
         int option = businessOwnerView(); //se alege o opt din meniu b.o.
         server.setBusinessOwnerInController(username);
+        businessOwnerController.getBusinessOwner();
         if(option == 1) {
-           showBusinessOwnerProducts();
+           showProducts(businessOwnerController.getBusinessOwnerProducts());
             businessOwnerMenu(username);
         }
         else if(option == 2) {
@@ -150,7 +151,7 @@ public class View {
             businessOwnerMenu(username);
         }
         else if(option == 8) {
-            runProgram();
+            return;
         }
         else {
             wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
@@ -223,8 +224,9 @@ public class View {
     public void organiserMenu(String username) {
         int option = organiserView(); //se alege o opt din meniu org
         server.setOrganiserInController(username);
+        organiserController.getOrganiser();
         if(option == 1){
-            showProducts();
+            showProducts(organiserController.getProducts());
             organiserMenu(username);
         }
         else if(option == 2) {
@@ -245,7 +247,7 @@ public class View {
             organiserMenu(username);
         }
         else if(option == 6) {
-            runProgram();
+            return;
         }
         else {
             wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
@@ -406,14 +408,6 @@ public class View {
 
     }
 
-    public void showProduct(Product product){
-        System.out.println("Id:" + product.getId());
-        System.out.println("Product: " + product.getName());
-        System.out.println("Rating: " + product.getRating());
-        System.out.println("Description: " + product.getDescription() + "\n");
-
-    }
-
     public void showCandyBar(CandyBar candyBar){
         System.out.println("Id:" + candyBar.getId());
         System.out.println("Product: " + candyBar.getName());
@@ -423,29 +417,22 @@ public class View {
 
     }
 
-    public void showProducts() {
-        List<Hall> halls = organiserController.getHalls();
-        for(Hall hall: halls) {
-            System.out.println(hall);
-        }
-        List<DJ> djs = organiserController.getDjs();
-        for(DJ dj: djs) {
-            System.out.println(dj);
-        }
-        List<CandyBar> candyBars = organiserController.getCandyBars();
-        for(CandyBar candyBar: candyBars) {
-            showCandyBar(candyBar);
-        }
-    }
 
-    public void showBusinessOwnerProducts() {
-        List<Product> products = businessOwnerController.getBusinessOwner().getProducts();
+    public void showProducts(List<Product> products) {
         if(products.isEmpty()) {
-            System.out.println("You don't have products listed!\n");
+            System.out.println("There are no products listed\n");
         }
         else {
-            for (Product product : products) {
-                showProduct(product);
+            for(Product product : products) {
+                if (product instanceof Hall) {
+                    System.out.println((Hall) product);
+                } else if (product instanceof DJ) {
+                    System.out.println((DJ) product);
+                } else if (product instanceof CandyBar) {
+                    showCandyBar((CandyBar) product);
+                } else {
+                    somethingWentWrong();
+                }
             }
         }
     }
@@ -522,9 +509,9 @@ public class View {
         int idProduct = input.nextInt();
         Product product = server.getProduct(idProduct);
 
-        while (product == null) {
+        while (product == null | product.getStatusProduct().equals(StatusProduct.INACTIVE)) {
             System.out.println("Please insert a valid Id: ");
-            showProducts();
+            showProducts(organiserController.getProducts());
             idProduct = input.nextInt();
             product = server.getProduct(idProduct);
         }
@@ -540,7 +527,7 @@ public class View {
 
         while (!businessOwnerController.isBusinessOwnerProduct(idProduct)) {
             System.out.println("Please insert a valid Id: ");
-            showBusinessOwnerProducts();
+            showProducts(businessOwnerController.getBusinessOwnerProducts());
             idProduct = input.nextInt();
         }
         return idProduct;

@@ -16,10 +16,13 @@ public abstract class Product {
     private Integer rating;
     private String description;
 
+    private StatusProduct statusProduct;
+
     public Product(String name, String description) {
         this.name = name;
         this.rating = null;
         this.description = description;
+        this.statusProduct = StatusProduct.ACTIVE;
     }
 
     public Product() {
@@ -36,6 +39,14 @@ public abstract class Product {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public StatusProduct getStatusProduct() {
+        return statusProduct;
+    }
+
+    public void setStatusProduct(StatusProduct statusProduct) {
+        this.statusProduct = statusProduct;
     }
 
     public Integer getRating() {

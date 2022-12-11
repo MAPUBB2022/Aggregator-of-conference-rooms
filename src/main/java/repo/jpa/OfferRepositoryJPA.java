@@ -45,12 +45,13 @@ public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Intege
 
     @Override
     public void updateStatus(Offer offer, Status newStatus) {
-        Offer updatedOffer = manager.merge(offer);
-        if(updatedOffer != null) {
+        if(offer != null) {
             manager.getTransaction().begin();
-            updatedOffer.setStatus(newStatus);
+            manager.merge(offer).setStatus(newStatus);
             manager.getTransaction().commit();
+            offer.setStatus(newStatus);
         }
+
     }
 
     @Override
