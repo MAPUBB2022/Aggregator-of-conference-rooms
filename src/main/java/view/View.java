@@ -4,8 +4,9 @@ import Controller.BusinessOwnerController;
 import Controller.OrganiserController;
 import Controller.Server;
 import model.*;
-import repo.inMemory.BusinessOwnerInMemoryRepository;
-import repo.inMemory.OrganiserInMemoryRepository;
+
+import repo.jpa.BusinessOwnerRepositoryJPA;
+import repo.jpa.OrganiserRepositoryJPA;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +36,7 @@ public class View {
             } else if (option == 2) {
                 signUpMenu();
             } else if (option == 0) {
-                break;
+                return;
             } else {
                 wrongNumber();
             }
@@ -119,36 +120,42 @@ public class View {
 
     public void businessOwnerMenu(String username) {
         int option = businessOwnerView(); //se alege o opt din meniu b.o.
-        server.createBusinessOwnerInController(username); //se cauta b.o dupa id in lista de b.o si se set noul b.o (cel gasit)
-
+        server.setBusinessOwnerInController(username);
         if(option == 1) {
            showBusinessOwnerProducts();
+            businessOwnerMenu(username);
         }
         else if(option == 2) {
             newMessagesMenu();
+            businessOwnerMenu(username);
         }
         else if(option == 3) {
             allMessagesMenu();
+            businessOwnerMenu(username);
         }
         else if(option == 4) {
             showOffers();
+            businessOwnerMenu(username);
         }
         else if(option == 5) {
             createProductMenu();
+            businessOwnerMenu(username);
         }
         else if(option==6){
             deleteProductMenu();
+            businessOwnerMenu(username);
         }
         else if(option==7) {
             modifyProductMenu();
+            businessOwnerMenu(username);
         }
         else if(option == 8) {
             runProgram();
         }
         else {
             wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
+            businessOwnerMenu(username);
         }
-        businessOwnerMenu(username); //se poate face o noua alegere din meniu
     }
 
     public void newMessagesMenu() {
@@ -215,32 +222,35 @@ public class View {
 
     public void organiserMenu(String username) {
         int option = organiserView(); //se alege o opt din meniu org
-
-       server.createOrganiserInController(username); //se cauta org dupa id in lista de org si se set noul org (cel gasit)
-
+        server.setOrganiserInController(username);
         if(option == 1){
             showProducts();
+            organiserMenu(username);
         }
         else if(option == 2) {
            showNewOffersMenu();
+           organiserMenu(username);
         }
         else if(option == 3) {
             showSentMessages();
+            organiserMenu(username);
         }
         else if(option == 4) {
             showReceivedOffers();
+            organiserMenu(username);
         }
         else if(option == 5){
             sendMessageMenu();
             messageSent();
+            organiserMenu(username);
         }
         else if(option == 6) {
             runProgram();
         }
         else {
             wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
+            organiserMenu(username);
         }
-        organiserMenu(username);
     }
 
 
@@ -308,12 +318,14 @@ public class View {
 
         boolean ok = true;
 
-        System.out.println("username: ");
-        String username = input.nextLine();
+        String username = null;
 
         while(ok) { //while(ok==true)
             //in bd avem deja un username existent pt un oarecare utiliz, nu putem avea 2 cu acelasi username
             //deci, se incearca un username pana se gaseste unul diferit de toate
+
+            System.out.println("username: ");
+            username = input.nextLine();
 
             if(server.getBusinessOwner(username) != null || server.getOrganiser(username) != null) {
                 System.out.println("Unavailable username, please choose another one");
@@ -321,8 +333,7 @@ public class View {
             else { //gaseste un username nou, adica il accepta pe cel introdus
                 ok = false;
             }
-            System.out.println("username: ");
-            username = input.nextLine();
+
         }
         System.out.println("Password: ");
         String password = input.nextLine();
@@ -403,11 +414,27 @@ public class View {
 
     }
 
+    public void showCandyBar(CandyBar candyBar){
+        System.out.println("Id:" + candyBar.getId());
+        System.out.println("Product: " + candyBar.getName());
+        System.out.println("Rating: " + candyBar.getRating());
+        System.out.println("Sweets: " + Arrays.asList(candyBar.getSweets()));
+        System.out.println("Description: " + candyBar.getDescription() + "\n");
+
+    }
 
     public void showProducts() {
-        List<Product> products = organiserController.getProducts();
-        for(Product product: products) {
-            showProduct(product);
+        List<Hall> halls = organiserController.getHalls();
+        for(Hall hall: halls) {
+            System.out.println(hall);
+        }
+        List<DJ> djs = organiserController.getDjs();
+        for(DJ dj: djs) {
+            System.out.println(dj);
+        }
+        List<CandyBar> candyBars = organiserController.getCandyBars();
+        for(CandyBar candyBar: candyBars) {
+            showCandyBar(candyBar);
         }
     }
 
@@ -591,6 +618,7 @@ public class View {
 
         Product productInMessage = getProductView();
 
+
         Integer guests = null;
         while (true) {
             System.out.println("Number of guests: ");
@@ -611,7 +639,7 @@ public class View {
         }
 
 
-        return new Message(productInMessage, OrganiserController.getInstance().getOrganiser(),  BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByProductId(productInMessage.getId()), startDate, endDate, guests, description);
+        return new Message(productInMessage, OrganiserController.getInstance().getOrganiser(),  BusinessOwnerRepositoryJPA.getInstance().findBusinessOwnerByProductId(productInMessage.getId()), startDate, endDate, guests, description);
 
     }
 
@@ -625,7 +653,7 @@ public class View {
         System.out.println("Price: ");
         Integer price = input.nextInt();
 
-        return new Offer(BusinessOwnerController.getInstance().getBusinessOwner(), OrganiserInMemoryRepository.getInstance().findOrganiserByMessageId(message.getIdMessage()), message.getProduct(), price, description);
+        return new Offer(BusinessOwnerController.getInstance().getBusinessOwner(), OrganiserRepositoryJPA.getInstance().findOrganiserByMessageId(message.getIdMessage()), message.getProduct(), price, description);
 
     }
 

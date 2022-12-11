@@ -1,6 +1,7 @@
 package model;
 
 import javax.persistence.*;
+import java.util.List;
 
 //cls Message are un anunt, (idMessage,count), descr,startDate,endDate,nrInvitati, status
 @Entity
@@ -10,7 +11,7 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idMessage; //final -> poate fi initializ doar 1 data oriunde in clasa + valoarea variab nu poate fi schimbata
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProduct")
     private Product product;
 
@@ -24,7 +25,7 @@ public class Message {
     private String startingDate;
     private String endingDate;
     private Integer guests;
-
+    @Enumerated(EnumType.STRING)
     private Status status;
 
     public Message(Product product, Organiser sender, BusinessOwner receiver, String startingDate, String endingDate, Integer guests, String description) {
@@ -102,6 +103,7 @@ public class Message {
     public void setGuests(Integer guests) {
         this.guests = guests;
     }
+
 
 }
 

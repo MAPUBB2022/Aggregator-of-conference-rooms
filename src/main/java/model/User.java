@@ -9,11 +9,9 @@ import javax.persistence.*;
 public abstract class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) //ca sa incrementeze id-ul automat in BD
-    private Integer id;
+    private String username;
     private String firstName;
     private String lastName;
-    private String username;
     private String password;
 
 

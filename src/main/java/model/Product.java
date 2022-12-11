@@ -12,7 +12,6 @@ public abstract class Product {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    private static Integer counter = 1;
     private String name;
     private Integer rating;
     private String description;
@@ -21,7 +20,6 @@ public abstract class Product {
         this.name = name;
         this.rating = null;
         this.description = description;
-        this.id = counter++;
     }
 
     public Product() {
@@ -55,4 +53,5 @@ public abstract class Product {
     public void setDescription(String description) {
         this.description = description;
     }
+
 }

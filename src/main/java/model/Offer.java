@@ -18,22 +18,24 @@ public class Offer{
     @JoinColumn(name = "idOrganiser")
     private Organiser receiver;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "idProduct")
     private Product product;
     private Integer price;
 
     private String description;
 
-    private Status status = null;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
 
 
-    public Offer(BusinessOwner sender, Organiser receiver, Product product, Integer price, String descripiton) {
+    public Offer(BusinessOwner sender, Organiser receiver, Product product, Integer price, String description) {
         this.sender = sender;
         this.receiver = receiver;
         this.price = price;
         this.description = description;
+        this.product = product;
     }
 
     public Offer() {

@@ -1,5 +1,6 @@
 package model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -9,9 +10,9 @@ import java.util.List;
 @Table(name = "organisers")
 public class Organiser extends User {
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Offer> receivedOffers = new ArrayList<>();
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Message> sentMessages = new ArrayList<>();
 
 
@@ -32,68 +33,14 @@ public class Organiser extends User {
         return sentMessages;
     }
 
-
-//    @Override
-//    public void add(Message newMessage) {
-//
-//    }
-//
-//    @Override
-//    public void remove(Integer integer) {
-//
-//    }
-//
-//    @Override
-//    public void update(Integer integer, Message newEntity) {
-//
-//    }
-//
-//    @Override
-//    public Message findById(Integer integer) {
-//        return null;
-//    }
-
-//    @Override
-//    public void add(Offer newOffer){
-//        for(Offer offer: this.sentOffers){
-//            if(of.getIdOffer().equals(entity.getIdOffer())){
-//                return;
-//            }
-//        }
-//        this.sentOffers.add(entity);
-//    }
-//
-//    //sterge o oferta dupa id din lista de oferte trimise
-//    @Override
-//    public void remove(Integer id){
-//
-//        this.sentOffers.removeIf(of -> of.getIdOffer().equals(id));
-//    }
-//
-//    @Override
-//    public void update(Integer id, Offer new_offer) {
-//
-//        for( Offer of : this.sentOffers) {
-//            if(of.getIdOffer().equals(id)) {
-//                of.setStartingDate(new_offer.getStartingDate());
-//                of.setEndingDate(new_offer.getEndingDate());
-//                of.setDescription(new_offer.getDescription());
-//                of.setAdInOffer(new_offer.getAdInOffer());
-//                break;
-//            }
-//        }
-//    }
-//
-//    @Override
-//    public Offer findById(Integer id) {
-//        for(Offer offer : this.sentOffers) {
-//            if(offer.getIdOffer().equals(id)) {
-//                return offer;
-//            }
-//        }
-//        return null;
-//    }
-
+    @Override
+    public String toString() {
+        return "Organiser{ " +
+                "username=" + getUsername() +
+                ", receivedOffers=" + receivedOffers +
+                ", sentMessages=" + sentMessages +
+                '}';
+    }
 
 
 }

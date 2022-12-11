@@ -1,9 +1,6 @@
 package model;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,14 +8,14 @@ import java.util.List;
 @Table(name = "businessOwners")
 public class BusinessOwner extends User {
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idBusinessOwner")
     private List<Product> products = new ArrayList<>();
 
-    @OneToMany(mappedBy = "sender")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Offer> sentOffers = new ArrayList<>();
 
-    @OneToMany(mappedBy = "receiver")
+    @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Message> receivedMessages = new ArrayList<>();
 
     public BusinessOwner(String firstName, String lastName, String username, String password) {
@@ -27,6 +24,16 @@ public class BusinessOwner extends User {
 
     public BusinessOwner() {
 
+    }
+
+    @Override
+    public String toString() {
+        return "BusinessOwner{ " +
+                "username=" + getUsername() +
+                ", products=" + products +
+                ", sentOffers=" + sentOffers +
+                ", receivedMessages=" + receivedMessages +
+                '}';
     }
 
     public List<Product> getProducts() {

@@ -26,5 +26,6 @@ public class CandyBar extends Product{
         this.sweets =sweets;
     }
 
+
 }
 

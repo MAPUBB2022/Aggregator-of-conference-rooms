@@ -5,6 +5,7 @@ import model.*;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
 import repo.inMemory.OrganiserInMemoryRepository;
 import repo.inMemory.ProductsInMemoryRepository;
+import repo.jpa.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,7 +14,7 @@ import java.util.List;
 public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
 
     private static OrganiserController single_instance = null;
-    private Organiser organiser;
+    String username;
     public static OrganiserController getInstance() {
         if (single_instance == null){
             single_instance = new OrganiserController();
@@ -23,63 +24,64 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     public OrganiserController() {
     }
 
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
     public Organiser getOrganiser() {
-        return organiser;
+        return OrganiserRepositoryJPA.getInstance().findById(username);
     }
 
-
-    public void setOrganiser(Organiser organiser) {
-        this.organiser = organiser;
-    }
 
     @Override
     public Organiser createUser(ArrayList<String> credentials) {
-        organiser = new Organiser(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
-        return organiser;
+        return new Organiser(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
     }
 
 
-    public List<Product> getProducts() {
-        return ProductsInMemoryRepository.getInstance().getAllProducts();
+    public List<Hall> getHalls() {
+        return ProductRepositoryJPA.getInstance().getHalls();
+    }
+    public List<CandyBar> getCandyBars() {
+        return ProductRepositoryJPA.getInstance().getCandyBars();
+    }
+    public List<DJ> getDjs() {
+        return ProductRepositoryJPA.getInstance().getDjs();
     }
 
     //se seteaza statusul unei oferte la ACCEPTED
     public void acceptOffer(Offer offer) {
-
-        offer.setStatus(Status.ACCEPTED);
+        OfferRepositoryJPA.getInstance().updateStatus(offer, Status.ACCEPTED);
     }
 
     //se seteaza statusul unei oferte la DECLINED
     public void declineOffer(Offer offer) {
-
-        offer.setStatus(Status.DECLINED);
+        OfferRepositoryJPA.getInstance().updateStatus(offer, Status.DECLINED);
     }
 
     public boolean checkNewReceivedOffers() {
-        return organiser.getReceivedOffers().isEmpty();
+        List<Offer> newOffers = getOrganiser().getReceivedOffers().stream().filter(offer -> offer.getStatus().equals(Status.SENT)).toList(); ;
+        return newOffers.isEmpty();
     }
 
     public boolean checkRequestedOffers() {
-        return organiser.getSentMessages().isEmpty();
+        return getOrganiser().getSentMessages().isEmpty();
     }
 
 
     public void sendMessage(Message message) {
-        Integer idProduct = message.getProduct().getId(); //se salveaaza id ul anuntului din anuntul din msj
-        BusinessOwner businessOwner = BusinessOwnerInMemoryRepository.getInstance().findBusinessOwnerByProductId(idProduct); //se salveaza b.o. coresp id ului din anunt
-        businessOwner.getReceivedMessages().add(message); //adaugam in lista de oferte cerute a b.o. msj
-        organiser.getSentMessages().add(message); //adaugam in lista de oferte cerute a org msj
-        message.setStatus(Status.SENT); //setam statusul msj la SENT
+        MessageRepositoryJPA.getInstance().add(message);
+        MessageRepositoryJPA.getInstance().updateStatus(message, Status.SENT); //setam statusul msj la SENT
     }
 
     //sorteaza lista de org dupa comparatorul de username a org
-    public static ArrayList<Organiser> sort(){
-        ArrayList<Organiser> allOrganisers= OrganiserInMemoryRepository.getInstance().getAllOrganisers();
-        Collections.sort(allOrganisers, new NameComparatorOrganiser());
-
-        return allOrganisers;
-
-    }
+//    public static ArrayList<Organiser> sort(){
+//        ArrayList<Organiser> allOrganisers= OrganiserInMemoryRepository.getInstance().getAllOrganisers();
+//        Collections.sort(allOrganisers, new NameComparatorOrganiser());
+//
+//        return allOrganisers;
+//
+//    }
 
     //filtrare dupa oferte acceptate - cu param, dar se poate si fara param (vezi in b.o.controller)
 //    public static List<Message> FilterByAcceptedOffer(Organiser organiser){

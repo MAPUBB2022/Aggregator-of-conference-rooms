@@ -6,16 +6,16 @@ import interfaces.ProductRepositoryInterface;
 import model.BusinessOwner;
 import model.Organiser;
 import model.Product;
-import repo.inMemory.BusinessOwnerInMemoryRepository;
-import repo.inMemory.OrganiserInMemoryRepository;
-import repo.inMemory.ProductsInMemoryRepository;
+import repo.jpa.BusinessOwnerRepositoryJPA;
+import repo.jpa.OrganiserRepositoryJPA;
+import repo.jpa.ProductRepositoryJPA;
 
 import java.util.ArrayList;
 
 public class Server {
-    private final OrganiserRepositoryInterface organisers = OrganiserInMemoryRepository.getInstance();
-    private final BusinessOwnerRepositoryInterface businessOwners = BusinessOwnerInMemoryRepository.getInstance();
-    private final ProductRepositoryInterface products = ProductsInMemoryRepository.getInstance();
+    private final OrganiserRepositoryInterface organisers = OrganiserRepositoryJPA.getInstance();
+    private final BusinessOwnerRepositoryInterface businessOwners = BusinessOwnerRepositoryJPA.getInstance();
+    private final ProductRepositoryInterface products = ProductRepositoryJPA.getInstance();
 
     private static Server single_instance = null;
 
@@ -51,10 +51,10 @@ public class Server {
         return false;
     }
 
-    public void createBusinessOwnerInController(String username) {
-        BusinessOwnerController.getInstance().setBusinessOwner(businessOwners.findById(username));
-    } public void createOrganiserInController(String username) {
-        OrganiserController.getInstance().setOrganiser(organisers.findById(username));
+    public void setBusinessOwnerInController(String username) {
+        BusinessOwnerController.getInstance().setUsername(username);
+    } public void setOrganiserInController(String username) {
+        OrganiserController.getInstance().setUsername(username);
     }
 
     public Product getProduct(Integer idProduct) {
