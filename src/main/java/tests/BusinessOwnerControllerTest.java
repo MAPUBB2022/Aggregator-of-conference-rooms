@@ -3,9 +3,12 @@ package tests;
 import Controller.BusinessOwnerController;
 import Controller.OrganiserController;
 import model.*;
+import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import repo.inMemory.BusinessOwnerInMemoryRepository;
+import repo.jpa.BusinessOwnerRepositoryJPA;
+import repo.jpa.ProductRepositoryJPA;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -22,13 +25,10 @@ class BusinessOwnerControllerTest {
     private Message message = new Message(hall, organiser, businessOwner, "12-12-2022", "13-12-2022", 500, "description");
     private Offer offer = new Offer(businessOwner, organiser, hall, 500, "description");
 
-    @BeforeEach
-    void setUp() {
-
-        businessOwner= new BusinessOwner("firstname", "lastname", "businessOwner", "1234");
-        //BusinessOwnerController.getInstance().setBusinessOwner(businessOwner);
-
-    }
+//    @Before
+//    void setUp() {
+//
+//    }
 
     @Test
     void checkNewMessages() {
@@ -78,20 +78,24 @@ class BusinessOwnerControllerTest {
 
     @Test
     void modifyProduct() {
-//        System.out.println("Modify Test\n");
-//
-//        Sweet sweet1 = new Sweet("chocolate");
-//        Sweet sweet2 = new Sweet("haribo");
-//
-//
-//        List<Sweet> sweets = new ArrayList<>(Arrays.asList(sweet1, sweet2));
-//        CandyBar candyBar = new CandyBar("name", "description", sweets);
-//        BusinessOwnerController.getInstance().createProduct(candyBar);
-//        assertTrue(businessOwner.getProducts().contains(hall));
+        System.out.println("Modify Test\n");
 
-//        BusinessOwnerController.getInstance().modifyProduct(hall.getId(), candyBar);
-//        assertEquals(businessOwner.getAds())
-//        assertTrue(businessOwner.getAds().contains(newAd));
+        BusinessOwnerController.getInstance().setUsername("businessOwner");
+        BusinessOwnerController.getInstance().createProduct(hall);
+
+        Sweet sweet1 = new Sweet("chocolate");
+        Sweet sweet2 = new Sweet("haribo");
+
+
+        List<Sweet> sweets = new ArrayList<>(Arrays.asList(sweet1, sweet2));
+        CandyBar candyBar = new CandyBar("name", "description", sweets);
+        BusinessOwnerController.getInstance().createProduct(candyBar);
+
+        assertTrue(BusinessOwnerRepositoryJPA.getInstance().findById("businessOwner").getProducts().contains(hall));
+
+        BusinessOwnerController.getInstance().modifyProduct(hall.getId(), candyBar);
+        assertEquals(StatusProduct.INACTIVE, .getStatusProduct());
+        assertTrue(BusinessOwnerRepositoryJPA.getInstance().findById("businessOwner").getProducts().contains(candyBar));
 
     }
 

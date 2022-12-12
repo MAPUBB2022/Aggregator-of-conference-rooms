@@ -2,7 +2,6 @@ package Controller;
 
 import interfaces.UserControllerInterface;
 import model.*;
-import repo.inMemory.ProductsInMemoryRepository;
 import repo.jpa.BusinessOwnerRepositoryJPA;
 import repo.jpa.MessageRepositoryJPA;
 import repo.jpa.OfferRepositoryJPA;
@@ -11,8 +10,7 @@ import repo.jpa.ProductRepositoryJPA;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, ArrayList<String>> {
     private static BusinessOwnerController single_instance = null;

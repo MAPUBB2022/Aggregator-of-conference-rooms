@@ -59,9 +59,8 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
     }
 
     public void updateProductsList(BusinessOwner businessOwner, Product product) {
-        BusinessOwner businessOwner1 = manager.merge(businessOwner);
         manager.getTransaction().begin();
-        businessOwner1.getProducts().add(product);
+        manager.merge(businessOwner).getProducts().add(product);
         manager.getTransaction().commit();
     }
 
