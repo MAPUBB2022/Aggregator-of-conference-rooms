@@ -52,6 +52,14 @@ public class Message {
         return receiver;
     }
 
+    public void setSender(Organiser sender) {
+        this.sender = sender;
+    }
+
+    public void setReceiver(BusinessOwner receiver) {
+        this.receiver = receiver;
+    }
+
     public Integer getIdMessage() {
         return idMessage;
     }

@@ -59,9 +59,14 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
     }
 
     public void updateProductsList(BusinessOwner businessOwner, Product product) {
-        BusinessOwner businessOwner1 = manager.merge(businessOwner);
         manager.getTransaction().begin();
-        businessOwner1.getProducts().add(product);
+        manager.merge(businessOwner).getProducts().add(product);
+        manager.getTransaction().commit();
+    }
+
+    public void removeProduct(BusinessOwner businessOwner, Product product) {
+        manager.getTransaction().begin();
+        manager.merge(businessOwner).getProducts().remove(product);
         manager.getTransaction().commit();
     }
 
@@ -69,7 +74,9 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
     @Override
     public BusinessOwner findById(String username) {
 
-        return manager.find(BusinessOwner.class, username);
+        BusinessOwner owner =  manager.find(BusinessOwner.class, username);
+        manager.refresh(owner);
+        return owner;
     }
 
 

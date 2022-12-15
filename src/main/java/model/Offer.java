@@ -70,6 +70,14 @@ public class Offer{
         return sender;
     }
 
+    public void setSender(BusinessOwner sender) {
+        this.sender = sender;
+    }
+
+    public void setReceiver(Organiser receiver) {
+        this.receiver = receiver;
+    }
+
     public Organiser getReceiver() {
         return receiver;
     }

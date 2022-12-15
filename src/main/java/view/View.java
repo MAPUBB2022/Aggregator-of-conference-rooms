@@ -290,7 +290,7 @@ public class View {
     }
 
     public void showReceivedOffers() {
-        if(organiserController.checkNewReceivedOffers()) {
+        if(organiserController.checkReceivedOffers()) {
             noSentMessages();
         }
         else {

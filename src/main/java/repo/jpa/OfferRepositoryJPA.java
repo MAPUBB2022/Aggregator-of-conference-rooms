@@ -1,9 +1,7 @@
 package repo.jpa;
 
 import interfaces.ChatRepositoryInterface;
-import model.Offer;
-import model.Product;
-import model.Status;
+import model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -25,11 +23,9 @@ public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Intege
     @Override
     public void add(Offer newOffer) {
         manager.getTransaction().begin();
-        Product product = manager.merge(newOffer.getProduct());
-        newOffer.setProduct(product);
+        newOffer.setProduct( manager.merge(newOffer.getProduct()));
         manager.persist(newOffer);
         manager.getTransaction().commit();
-
     }
 
     @Override
@@ -48,8 +44,12 @@ public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Intege
         if(offer != null) {
             manager.getTransaction().begin();
             manager.merge(offer).setStatus(newStatus);
+            BusinessOwner sender = BusinessOwnerRepositoryJPA.getInstance().findById(offer.getSender().getUsername());
+            Organiser receiver = OrganiserRepositoryJPA.getInstance().findById(offer.getReceiver().getUsername());
+            offer.setSender(sender);
+            offer.setReceiver(receiver);
             manager.getTransaction().commit();
-            offer.setStatus(newStatus);
+
         }
 
     }

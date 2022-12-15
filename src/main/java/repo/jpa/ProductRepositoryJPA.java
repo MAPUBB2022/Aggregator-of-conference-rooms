@@ -51,8 +51,8 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
             manager.getTransaction().begin();
             if (product.getClass() != newProduct.getClass()) {
                 product.setStatusProduct(StatusProduct.INACTIVE);
-                manager.persist(newProduct);
-                manager.getTransaction().commit();
+                add(newProduct); // update la baza de date
+                product.setStatusProduct(StatusProduct.INACTIVE);
             } else {
                 if (product instanceof Hall) {
                     updateHall((Hall) product, (Hall) newProduct);

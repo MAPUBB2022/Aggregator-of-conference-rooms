@@ -2,10 +2,7 @@ package repo.jpa;
 
 import interfaces.ChatRepositoryInterface;
 import interfaces.ICrudRepositoryInterface;
-import model.Message;
-import model.Organiser;
-import model.Product;
-import model.Status;
+import model.*;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -29,6 +26,10 @@ public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, In
 
         manager.getTransaction().begin();
         Product product = manager.merge(newMessage.getProduct());
+        Organiser sender = manager.merge(newMessage.getSender());
+        BusinessOwner receiver = manager.merge(newMessage.getReceiver());
+        newMessage.setSender(sender);
+        newMessage.setReceiver(receiver);
         newMessage.setProduct(product);
         manager.persist(newMessage);
         manager.getTransaction().commit();
@@ -49,15 +50,23 @@ public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, In
     public void updateStatus(Message message, Status newStatus) {
         if(message != null) {
             manager.getTransaction().begin();
+            Organiser sender = OrganiserRepositoryJPA.getInstance().findById(message.getSender().getUsername());
+            BusinessOwner receiver = BusinessOwnerRepositoryJPA.getInstance().findById(message.getReceiver().getUsername());
+            message.setSender(sender);
+            message.setReceiver(receiver);
             manager.merge(message).setStatus(newStatus);
+
             manager.getTransaction().commit();
-            message.setStatus(newStatus);
         }
     }
 
     @Override
     public Message findById(Integer id) {
-        return manager.find(Message.class, id);
+        //manager.refresh(Message.class);
+
+        Message message =  manager.find(Message.class, id);
+        //manager.refresh(message);
+        return message;
     }
 
 

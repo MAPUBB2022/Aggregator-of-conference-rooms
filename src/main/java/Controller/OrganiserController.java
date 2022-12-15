@@ -58,6 +58,10 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return newOffers.isEmpty();
     }
 
+    public boolean checkReceivedOffers() {
+        return getOrganiser().getReceivedOffers().isEmpty();
+    }
+
     public boolean checkRequestedOffers() {
         return getOrganiser().getSentMessages().isEmpty();
     }
