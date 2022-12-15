@@ -40,6 +40,7 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
             manager.getTransaction().begin();
             product.setStatusProduct(StatusProduct.INACTIVE);
             manager.getTransaction().commit();
+            product.setStatusProduct(StatusProduct.INACTIVE);
         }
 
     }
