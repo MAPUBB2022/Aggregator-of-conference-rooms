@@ -8,22 +8,21 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Integer> {
-    private static OfferRepositoryJPA single_instance = null;
+    private final EntityManager manager;
 
-    private final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-    private final EntityManager manager = factory.createEntityManager();
-
-    public static OfferRepositoryJPA getInstance() {
-        if (single_instance == null){
-            single_instance = new OfferRepositoryJPA();
-        }
-        return single_instance;
+    public OfferRepositoryJPA(EntityManager manager) {
+        this.manager = manager;
     }
 
     @Override
     public void add(Offer newOffer) {
         manager.getTransaction().begin();
-        newOffer.setProduct( manager.merge(newOffer.getProduct()));
+        Product product = manager.merge(newOffer.getProduct());
+        BusinessOwner sender = manager.merge(newOffer.getSender());
+        Organiser receiver = manager.merge(newOffer.getReceiver());
+        newOffer.setSender(sender);
+        newOffer.setReceiver(receiver);
+        newOffer.setProduct(product);
         manager.persist(newOffer);
         manager.getTransaction().commit();
     }
@@ -44,10 +43,10 @@ public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Intege
         if(offer != null) {
             manager.getTransaction().begin();
             manager.merge(offer).setStatus(newStatus);
-            BusinessOwner sender = BusinessOwnerRepositoryJPA.getInstance().findById(offer.getSender().getUsername());
-            Organiser receiver = OrganiserRepositoryJPA.getInstance().findById(offer.getReceiver().getUsername());
-            offer.setSender(sender);
-            offer.setReceiver(receiver);
+            BusinessOwner sender = manager.merge(offer.getSender());
+            Organiser receiver = manager.merge(offer.getReceiver());
+            manager.merge(offer).setSender(sender);
+            manager.merge(offer).setReceiver(receiver);
             manager.getTransaction().commit();
 
         }

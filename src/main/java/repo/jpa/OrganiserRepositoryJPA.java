@@ -1,7 +1,6 @@
 package repo.jpa;
 
 import interfaces.OrganiserRepositoryInterface;
-import model.BusinessOwner;
 import model.Organiser;
 
 import javax.persistence.EntityManager;
@@ -10,16 +9,11 @@ import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
-    private static OrganiserRepositoryJPA single_instance = null;
 
-    private final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-    private final EntityManager manager = factory.createEntityManager();
+    private final EntityManager manager;
 
-    public static OrganiserRepositoryJPA getInstance() {
-        if (single_instance == null){
-            single_instance = new OrganiserRepositoryJPA();
-        }
-        return single_instance;
+    public OrganiserRepositoryJPA(EntityManager manager) {
+        this.manager = manager;
     }
 
     @Override

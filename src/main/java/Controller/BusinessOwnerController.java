@@ -8,26 +8,31 @@ import repo.jpa.OfferRepositoryJPA;
 import repo.jpa.ProductRepositoryJPA;
 
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, ArrayList<String>> {
-    private static BusinessOwnerController single_instance = null;
     private String username;
 
-    public static BusinessOwnerController getInstance() {
-        if (single_instance == null){
-            single_instance = new BusinessOwnerController();
-        }
-        return single_instance;
+    private BusinessOwnerRepositoryJPA businessOwnerRepositoryJPA;
+    private MessageRepositoryJPA messageRepositoryJPA;
+    private OfferRepositoryJPA offerRepositoryJPA;
+
+
+
+    public BusinessOwnerController(BusinessOwnerRepositoryJPA businessOwnerRepositoryJPA, MessageRepositoryJPA messageRepositoryJPA, OfferRepositoryJPA offerRepositoryJPA) {
+        this.businessOwnerRepositoryJPA = businessOwnerRepositoryJPA;
+        this.messageRepositoryJPA = messageRepositoryJPA;
+        this.offerRepositoryJPA = offerRepositoryJPA;
     }
 
     public BusinessOwnerController() {
     }
 
     public BusinessOwner getBusinessOwner() {
-        return BusinessOwnerRepositoryJPA.getInstance().findById(username);
+        return businessOwnerRepositoryJPA.findById(username);
     }
 
 
@@ -36,7 +41,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public List<Product> getBusinessOwnerProducts() {
-        List<Product> products = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getProducts();
+        List<Product> products = businessOwnerRepositoryJPA.findById(this.username).getProducts();
         return products.stream().filter(product -> product.getStatusProduct().equals(StatusProduct.ACTIVE)).toList();
     }
 
@@ -55,33 +60,25 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public void createProduct(Product newProduct) {
-        BusinessOwnerRepositoryJPA.getInstance().updateProductsList(getBusinessOwner(), newProduct);
-    }
-
-    public void deleteProduct(Integer idProduct){
-        ProductRepositoryJPA.getInstance().remove(idProduct);
-    }
-
-    public void modifyProduct(Integer idProduct, Product newProduct) {
-        ProductRepositoryJPA.getInstance().update(idProduct, newProduct);
+        businessOwnerRepositoryJPA.updateProductsList(getBusinessOwner(), newProduct);
     }
 
     public void declineMessage(Message message) {
 
-        MessageRepositoryJPA.getInstance().updateStatus(message, Status.DECLINED);
+        messageRepositoryJPA.updateStatus(message, Status.DECLINED);
     }
 
 
     public void makeOffer(Offer offer, Message message) {
-        OfferRepositoryJPA.getInstance().add(offer);
-        OfferRepositoryJPA.getInstance().updateStatus(offer, Status.SENT);
-        MessageRepositoryJPA.getInstance().updateStatus(message, Status.ACCEPTED);
+        offerRepositoryJPA.add(offer);
+        offerRepositoryJPA.updateStatus(offer, Status.SENT);
+        messageRepositoryJPA.updateStatus(message, Status.ACCEPTED);
     }
 
     @Override
     public List<Message> filterByDeclinedMessages(){
 
-        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+        List<Message> messages = businessOwnerRepositoryJPA.findById(this.username).getReceivedMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.DECLINED)).toList();
     }
@@ -89,27 +86,27 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     @Override
     public List<Message> filterByAcceptedMessages(){
 
-        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+        List<Message> messages = businessOwnerRepositoryJPA.findById(this.username).getReceivedMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.ACCEPTED)).toList();
     }
     @Override
     public List<Offer> filterByDeclinedOffers(){
 
-        List<Offer> offers = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getSentOffers();
+        List<Offer> offers = businessOwnerRepositoryJPA.findById(this.username).getSentOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.DECLINED)).toList();
     }
     @Override
     public List<Offer> filterByAcceptedOffers(){
 
-        List<Offer> offers = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getSentOffers();
+        List<Offer> offers = businessOwnerRepositoryJPA.findById(this.username).getSentOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.ACCEPTED)).toList();
     }
 
     public List<Message> filterMessagesBySenderUsername(String senderUsername) {
-        List<Message> messages = BusinessOwnerRepositoryJPA.getInstance().findById(this.username).getReceivedMessages();
+        List<Message> messages = businessOwnerRepositoryJPA.findById(this.username).getReceivedMessages();
 
         return messages.stream().filter(message -> message.getSender().getUsername().equals(senderUsername)).toList();
     }

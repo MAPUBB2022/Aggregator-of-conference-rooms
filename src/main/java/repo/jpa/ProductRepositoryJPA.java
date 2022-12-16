@@ -4,23 +4,14 @@ import interfaces.ProductRepositoryInterface;
 import model.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
 public class ProductRepositoryJPA implements ProductRepositoryInterface {
+    private final EntityManager manager;
 
-    private static ProductRepositoryJPA single_instance = null;
-
-    private final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-    private final EntityManager manager = factory.createEntityManager();
-
-    public static ProductRepositoryJPA getInstance() {
-        if (single_instance == null) {
-            single_instance = new ProductRepositoryJPA();
-        }
-        return single_instance;
+    public ProductRepositoryJPA(EntityManager manager) {
+        this.manager = manager;
     }
 
     @Override

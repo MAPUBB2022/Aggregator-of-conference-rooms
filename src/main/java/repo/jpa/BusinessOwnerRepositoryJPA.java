@@ -9,18 +9,13 @@ import java.util.stream.Collectors;
 
 
 public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterface {
-    private static BusinessOwnerRepositoryJPA single_instance = null;
 
-    private final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-    private final EntityManager manager = factory.createEntityManager();
+    private final EntityManager manager;
 
-    public static BusinessOwnerRepositoryJPA getInstance() {
-        if (single_instance == null){
-            single_instance = new BusinessOwnerRepositoryJPA();
-        }
-        return single_instance;
+
+    public BusinessOwnerRepositoryJPA(EntityManager manager) {
+        this.manager = manager;
     }
-
 
     @Override
     public void add(BusinessOwner newBusinessOwner){
@@ -73,10 +68,7 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
 
     @Override
     public BusinessOwner findById(String username) {
-
-        BusinessOwner owner =  manager.find(BusinessOwner.class, username);
-        manager.refresh(owner);
-        return owner;
+        return manager.find(BusinessOwner.class, username);
     }
 
 

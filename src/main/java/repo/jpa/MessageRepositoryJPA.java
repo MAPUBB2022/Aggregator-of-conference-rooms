@@ -9,16 +9,10 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, Integer> {
-    private static MessageRepositoryJPA single_instance = null;
+    private final EntityManager manager;
 
-    private final EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
-    private final EntityManager manager = factory.createEntityManager();
-
-    public static MessageRepositoryJPA getInstance() {
-        if (single_instance == null){
-            single_instance = new MessageRepositoryJPA();
-        }
-        return single_instance;
+    public MessageRepositoryJPA(EntityManager manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -50,10 +44,10 @@ public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, In
     public void updateStatus(Message message, Status newStatus) {
         if(message != null) {
             manager.getTransaction().begin();
-            Organiser sender = OrganiserRepositoryJPA.getInstance().findById(message.getSender().getUsername());
-            BusinessOwner receiver = BusinessOwnerRepositoryJPA.getInstance().findById(message.getReceiver().getUsername());
-            message.setSender(sender);
-            message.setReceiver(receiver);
+            Organiser sender = manager.merge(message.getSender());
+            BusinessOwner receiver = manager.merge(message.getReceiver());
+            manager.merge(message).setSender(sender);
+            manager.merge(message).setReceiver(receiver);
             manager.merge(message).setStatus(newStatus);
 
             manager.getTransaction().commit();

@@ -7,6 +7,7 @@ import repo.inMemory.OrganiserInMemoryRepository;
 import repo.inMemory.ProductsInMemoryRepository;
 import repo.jpa.*;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -14,14 +15,21 @@ import java.util.List;
 
 public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
 
-    private static OrganiserController single_instance = null;
-    String username;
-    public static OrganiserController getInstance() {
-        if (single_instance == null){
-            single_instance = new OrganiserController();
-        }
-        return single_instance;
+    private String username;
+
+    private OrganiserRepositoryJPA organiserRepositoryJPA;
+
+    private MessageRepositoryJPA messageRepositoryJPA;
+    private OfferRepositoryJPA offerRepositoryJPA;
+
+
+
+    public OrganiserController(OrganiserRepositoryJPA organiserRepositoryJPA, MessageRepositoryJPA messageRepositoryJPA, OfferRepositoryJPA offerRepositoryJPA) {
+        this.organiserRepositoryJPA = organiserRepositoryJPA;
+        this.messageRepositoryJPA = messageRepositoryJPA;
+        this.offerRepositoryJPA = offerRepositoryJPA;
     }
+
     public OrganiserController() {
     }
 
@@ -30,7 +38,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     }
 
     public Organiser getOrganiser() {
-        return OrganiserRepositoryJPA.getInstance().findById(username);
+        return organiserRepositoryJPA.findById(username);
     }
 
 
@@ -39,18 +47,15 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return new Organiser(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
     }
 
-    public List<Product> getProducts() {
-        return ProductRepositoryJPA.getInstance().getProducts();
-    }
 
     //se seteaza statusul unei oferte la ACCEPTED
     public void acceptOffer(Offer offer) {
-        OfferRepositoryJPA.getInstance().updateStatus(offer, Status.ACCEPTED);
+        offerRepositoryJPA.updateStatus(offer, Status.ACCEPTED);
     }
 
     //se seteaza statusul unei oferte la DECLINED
     public void declineOffer(Offer offer) {
-        OfferRepositoryJPA.getInstance().updateStatus(offer, Status.DECLINED);
+        offerRepositoryJPA.updateStatus(offer, Status.DECLINED);
     }
 
     public boolean checkNewReceivedOffers() {
@@ -68,14 +73,14 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
 
 
     public void sendMessage(Message message) {
-        MessageRepositoryJPA.getInstance().add(message);
-        MessageRepositoryJPA.getInstance().updateStatus(message, Status.SENT); //setam statusul msj la SENT
+        messageRepositoryJPA.add(message);
+        messageRepositoryJPA.updateStatus(message, Status.SENT); //setam statusul msj la SENT
     }
 
     @Override
     public List<Message> filterByDeclinedMessages(){
 
-        List<Message> messages = OrganiserRepositoryJPA.getInstance().findById(this.username).getSentMessages();
+        List<Message> messages = organiserRepositoryJPA.findById(this.username).getSentMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.DECLINED)).toList();
     }
@@ -83,39 +88,39 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     @Override
     public List<Message> filterByAcceptedMessages(){
 
-        List<Message> messages = OrganiserRepositoryJPA.getInstance().findById(this.username).getSentMessages();
+        List<Message> messages = organiserRepositoryJPA.findById(this.username).getSentMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.ACCEPTED)).toList();
     }
     @Override
     public List<Offer> filterByDeclinedOffers(){
 
-        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.DECLINED)).toList();
     }
     @Override
     public List<Offer> filterByAcceptedOffers(){
 
-        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.ACCEPTED)).toList();
     }
 
     public List<Offer> sortOffersByPriceAscending() {
-        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
 
         return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice)).toList();
     }
 
     public List<Offer> sortOffersByPriceDescending() {
-        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
 
         return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice).reversed()).toList();
     }
 
     public List<Offer> filterOffersBySenderUsername(String usernameSender) {
-        List<Offer> offers = OrganiserRepositoryJPA.getInstance().findById(this.username).getReceivedOffers();
+        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
         return offers.stream().filter(offer -> offer.getSender().getUsername().equals(usernameSender)).toList();
     }
 

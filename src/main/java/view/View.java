@@ -8,25 +8,16 @@ import model.*;
 import repo.jpa.BusinessOwnerRepositoryJPA;
 import repo.jpa.OrganiserRepositoryJPA;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import javax.persistence.EntityManager;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class View {
 
     private final Server server;
-
-    private final BusinessOwnerController businessOwnerController;
-
-    private final OrganiserController organiserController;
-
-    public View() {
-        this.server = Server.getInstance();
-        this.businessOwnerController = BusinessOwnerController.getInstance();
-        this.organiserController = OrganiserController.getInstance();
+    public View(EntityManager manager) {
+        this.server = new Server(manager);
     }
-
 
     public void runProgram(){
         while(true) {
@@ -121,9 +112,9 @@ public class View {
     public void businessOwnerMenu(String username) {
         int option = businessOwnerView(); //se alege o opt din meniu b.o.
         server.setBusinessOwnerInController(username);
-        businessOwnerController.getBusinessOwner();
+        server.getBusinessOwnerController().getBusinessOwner();
         if(option == 1) {
-           showProducts(businessOwnerController.getBusinessOwnerProducts());
+           showProducts(server.getBusinessOwnerController().getBusinessOwnerProducts());
             businessOwnerMenu(username);
         }
         else if(option == 2) {
@@ -160,19 +151,22 @@ public class View {
     }
 
     public void newMessagesMenu() {
-        if (businessOwnerController.checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
+        if (server.getBusinessOwnerController().checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
             noNewMessages(); //nu exista msj nou
         }
-        for (Message message : businessOwnerController.getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
+        List<Message> messages = new CopyOnWriteArrayList<Message>(server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages());
+        for (Message message : messages) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
             if(message.getStatus().equals(Status.SENT)) { //daca starea msj e de SENT
                 showMessage(message); //vezi msj
                 askOfferMaking(); //apare msj daca vrei sa faci o oferta
                 boolean answer = answer(); //se ret rasp true/false
                 if (answer) {  //if(answer!=false) //daca rasp e da
+                    //messagesToAccept.add(message);
                     makeOfferMenu(message); //se face oferta
                     offerSent(); //apare msj de oferta creata cu succes
                 } else { //daca rasp e nu
-                    businessOwnerController.declineMessage(message); //se set starea msj la DECLINED
+                    //messagesToDecline.add(message);
+                    server.getBusinessOwnerController().declineMessage(message); //se set starea msj la DECLINED
                     messageDeclined(); //apare msj de declined
                 }
             }
@@ -181,25 +175,25 @@ public class View {
 
     public void makeOfferMenu(Message message) {
         Offer offer = createOfferView(message);
-        businessOwnerController.makeOffer(offer, message);
+        server.getBusinessOwnerController().makeOffer(offer, message);
     }
 
     public void allMessagesMenu() {
-        if (businessOwnerController.checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
+        if (server.getBusinessOwnerController().checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
             noMessages(); //nu exista mesaje primite
         }
-        for (Message message : businessOwnerController.getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
+        for (Message message : server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
             showMessage(message); //se arata msj de forma.. pe care il trimite org b.o.
         }
 
     }
 
     public void showOffers() {
-        if(businessOwnerController.checkSentOffers()) { //daca lista de oferte trimise a b.o. e goala
+        if(server.getBusinessOwnerController().checkSentOffers()) { //daca lista de oferte trimise a b.o. e goala
             noOffers(); //apare msj ca nu ai ce oferte sa vezi
         }
         else {
-            for (Offer offer : businessOwnerController.getBusinessOwner().getSentOffers()) {
+            for (Offer offer : server.getBusinessOwnerController().getBusinessOwner().getSentOffers()) {
                 showOffer(offer);
             }
         }
@@ -207,26 +201,26 @@ public class View {
 
     public void createProductMenu() {
         Product createdProduct = createProductView();
-        businessOwnerController.createProduct(createdProduct);
+        server.getBusinessOwnerController().createProduct(createdProduct);
     }
 
     public void deleteProductMenu(){
         Integer idProduct = getBusinessOwnerProductId();
-        businessOwnerController.deleteProduct(idProduct);
+        server.getProductController().deleteProduct(idProduct);
     }
 
     public void modifyProductMenu() {
         Integer idProduct = getBusinessOwnerProductId();
         Product newProduct = createProductView();
-        businessOwnerController.modifyProduct(idProduct, newProduct);
+        server.getProductController().modifyProduct(idProduct, newProduct);
     }
 
     public void organiserMenu(String username) {
         int option = organiserView(); //se alege o opt din meniu org
         server.setOrganiserInController(username);
-        organiserController.getOrganiser();
+        server.getOrganiserController().getOrganiser();
         if(option == 1){
-            showProducts(organiserController.getProducts());
+            showProducts(server.getProductController().getProducts());
             organiserMenu(username);
         }
         else if(option == 2) {
@@ -257,20 +251,22 @@ public class View {
 
 
     public void showNewOffersMenu() {
-        if(organiserController.checkNewReceivedOffers()) { //daca lista de oferte primite a org e goala
+        if(server.getOrganiserController().checkNewReceivedOffers()) { //daca lista de oferte primite a org e goala
             noNewMessages(); //nu exita msj nou
         }
         else {
-            for (Offer offer : organiserController.getOrganiser().getReceivedOffers()) { //pt fiecare oferta din lista de oferte primite a org
+            List<Offer> offers = new CopyOnWriteArrayList<Offer>(server.getOrganiserController().getOrganiser().getReceivedOffers());
+
+            for (Offer offer : offers) {
                 if (offer.getStatus().equals(Status.SENT)) { //daca starea ofertei e SENT
                     showOffer(offer); //se afis oferta
                     askOfferAccepting(); //apare msj daca vrei sa accepti oferta
                     boolean answer = answer();
                     if (answer) { //daca rasp e true
-                        organiserController.acceptOffer(offer); //status ul ofertei devine ACCEPTED
+                        server.getOrganiserController().acceptOffer(offer); //status ul ofertei devine ACCEPTED
                         offerAccepted(); //apare msj cu oferta acceptata
                     } else {
-                        organiserController.declineOffer(offer); //status ul ofertei devine DECLINED
+                        server.getOrganiserController().declineOffer(offer); //status ul ofertei devine DECLINED
                         offerDeclined(); //apare msj cu oferta respinsa
                     }
                 }
@@ -279,22 +275,22 @@ public class View {
     }
 
     public void showSentMessages() {
-        if(organiserController.checkRequestedOffers()) { //daca lista de oferte cerute a org e goala
+        if(server.getOrganiserController().checkRequestedOffers()) { //daca lista de oferte cerute a org e goala
             noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
         }
         else { //daca lista nu e goala
-            for (Message message : organiserController.getOrganiser().getSentMessages()) { //pt fiecare msj din lista de oferte cerute a org
+            for (Message message : server.getOrganiserController().getOrganiser().getSentMessages()) { //pt fiecare msj din lista de oferte cerute a org
                 showMessage(message); //se afis msj
             }
         }
     }
 
     public void showReceivedOffers() {
-        if(organiserController.checkReceivedOffers()) {
+        if(server.getOrganiserController().checkReceivedOffers()) {
             noSentMessages();
         }
         else {
-            for (Offer offer : organiserController.getOrganiser().getReceivedOffers()) {
+            for (Offer offer : server.getOrganiserController().getOrganiser().getReceivedOffers()) {
                 showOffer(offer);
             }
         }
@@ -302,7 +298,7 @@ public class View {
 
     public void sendMessageMenu() {
         Message message = createMessageView(); //se creaza msj org catre b.o.
-        organiserController.sendMessage(message);
+        server.getOrganiserController().sendMessage(message);
     }
 
     public void wrongCredentials() {
@@ -507,13 +503,13 @@ public class View {
         System.out.println("Please insert the product Id: ");
 
         int idProduct = input.nextInt();
-        Product product = server.getProduct(idProduct);
+        Product product = server.getProductController().getProduct(idProduct);
 
         while (product == null | product.getStatusProduct().equals(StatusProduct.INACTIVE)) {
             System.out.println("Please insert a valid Id: ");
-            showProducts(organiserController.getProducts());
+            showProducts(server.getProductController().getProducts());
             idProduct = input.nextInt();
-            product = server.getProduct(idProduct);
+            product = server.getProductController().getProduct(idProduct);
         }
         return product;
     }
@@ -525,9 +521,9 @@ public class View {
 
         int idProduct = input.nextInt();
 
-        while (!businessOwnerController.isBusinessOwnerProduct(idProduct)) {
+        while (!server.getBusinessOwnerController().isBusinessOwnerProduct(idProduct)) {
             System.out.println("Please insert a valid Id: ");
-            showProducts(businessOwnerController.getBusinessOwnerProducts());
+            showProducts(server.getBusinessOwnerController().getBusinessOwnerProducts());
             idProduct = input.nextInt();
         }
         return idProduct;
@@ -626,7 +622,7 @@ public class View {
         }
 
 
-        return new Message(productInMessage, OrganiserController.getInstance().getOrganiser(),  BusinessOwnerRepositoryJPA.getInstance().findBusinessOwnerByProductId(productInMessage.getId()), startDate, endDate, guests, description);
+        return new Message(productInMessage, server.getOrganiserController().getOrganiser(),  server.getBusinessOwnerByProductId(productInMessage.getId()), startDate, endDate, guests, description);
 
     }
 
@@ -640,7 +636,7 @@ public class View {
         System.out.println("Price: ");
         Integer price = input.nextInt();
 
-        return new Offer(BusinessOwnerController.getInstance().getBusinessOwner(), OrganiserRepositoryJPA.getInstance().findOrganiserByMessageId(message.getIdMessage()), message.getProduct(), price, description);
+        return new Offer(server.getBusinessOwnerController().getBusinessOwner(), server.getOrganiserByMessageId(message.getIdMessage()), message.getProduct(), price, description);
 
     }
 
