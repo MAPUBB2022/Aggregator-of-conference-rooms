@@ -42,7 +42,6 @@ public class BusinessOwnerController implements UserControllerInterface<Business
 
     public List<Product> getBusinessOwnerProducts() {
         List<Product> products = businessOwnerRepositoryJPA.findById(this.username).getProducts();
-//        return products.stream().filter(product -> product.getStatusProduct().equals(StatusProduct.ACTIVE)).toList();
         return products;
     }
 
@@ -54,6 +53,11 @@ public class BusinessOwnerController implements UserControllerInterface<Business
 
     public boolean checkNewMessages() {
         List<Message> newMessages = getBusinessOwner().getReceivedMessages().stream().filter(message -> message.getStatus().equals(Status.SENT)).toList(); ;
+        return newMessages.isEmpty();
+    }
+
+    public boolean checkReceivedMessages() {
+        List<Message> newMessages = getBusinessOwner().getReceivedMessages();
         return newMessages.isEmpty();
     }
     public boolean checkSentOffers() {

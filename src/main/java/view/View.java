@@ -1,12 +1,8 @@
 package view;
 
-import Controller.BusinessOwnerController;
-import Controller.OrganiserController;
+
 import Controller.Server;
 import model.*;
-
-import repo.jpa.BusinessOwnerRepositoryJPA;
-import repo.jpa.OrganiserRepositoryJPA;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -122,11 +118,11 @@ public class View {
             businessOwnerMenu(username);
         }
         else if(option == 3) {
-            allMessagesMenu();
+            showReceivedMessagesSubmenu();
             businessOwnerMenu(username);
         }
         else if(option == 4) {
-            showOffers();
+            showSentOffersSubmenu();
             businessOwnerMenu(username);
         }
         else if(option == 5) {
@@ -160,12 +156,10 @@ public class View {
                 showMessage(message); //vezi msj
                 askOfferMaking(); //apare msj daca vrei sa faci o oferta
                 boolean answer = answer(); //se ret rasp true/false
-                if (answer) {  //if(answer!=false) //daca rasp e da
-                    //messagesToAccept.add(message);
+                if (answer) {
                     makeOfferMenu(message); //se face oferta
                     offerSent(); //apare msj de oferta creata cu succes
                 } else { //daca rasp e nu
-                    //messagesToDecline.add(message);
                     server.getBusinessOwnerController().declineMessage(message); //se set starea msj la DECLINED
                     messageDeclined(); //apare msj de declined
                 }
@@ -178,23 +172,98 @@ public class View {
         server.getBusinessOwnerController().makeOffer(offer, message);
     }
 
-    public void allMessagesMenu() {
-        if (server.getBusinessOwnerController().checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
-            noMessages(); //nu exista mesaje primite
+    public List<Message> checkForReceivedMessages() {
+        if (server.getBusinessOwnerController().checkReceivedMessages()) { //daca lista de oferte cerute a b.o. e goala
+            noMessages();
+            return null;
         }
-        for (Message message : server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages()) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
-            showMessage(message); //se arata msj de forma.. pe care il trimite org b.o.
+        return server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages();
+    }
+
+    public Integer showReceivedMessagesView() {
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Select option: ");
+        System.out.println("1. Show accepted messages");
+        System.out.println("2. Show declined messages");
+        System.out.println("3. Show messages by sender");
+        System.out.println("4. Exit");
+
+
+        Integer option = input.nextInt();
+
+        return option;
+
+    }
+
+    public void showReceivedMessagesSubmenu() {
+        List<Message> messages= checkForReceivedMessages();
+        if(messages != null) {
+            showMessages(messages);
+            boolean ok = true;
+            while (ok) {
+                Integer option = showReceivedMessagesView();
+                if(option == 1) {
+                    showMessages(server.getBusinessOwnerController().filterByAcceptedMessages());
+                }
+                else if(option == 2) {
+                    showMessages(server.getBusinessOwnerController().filterByDeclinedMessages());
+                }
+                else if(option == 3) {
+                    String username = getSenderUsername();
+                    showMessages(server.getBusinessOwnerController().filterMessagesBySenderUsername(username));
+                }
+                else if(option == 4) {
+                    ok = false;
+                }
+                else {
+                    wrongNumber();
+                }
+            }
         }
 
     }
 
-    public void showOffers() {
+    public List<Offer> checkForSentOffers() {
         if(server.getBusinessOwnerController().checkSentOffers()) { //daca lista de oferte trimise a b.o. e goala
             noOffers(); //apare msj ca nu ai ce oferte sa vezi
+            return null;
         }
-        else {
-            for (Offer offer : server.getBusinessOwnerController().getBusinessOwner().getSentOffers()) {
-                showOffer(offer);
+        return server.getBusinessOwnerController().getBusinessOwner().getSentOffers();
+    }
+
+    public Integer showSentOffersView() {
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Select option: ");
+        System.out.println("1. Show accepted offers");
+        System.out.println("2. Show declined offers");
+        System.out.println("3. Exit");
+
+
+        Integer option = input.nextInt();
+
+        return option;
+    }
+    public void showSentOffersSubmenu() {
+        List<Offer> offers= checkForSentOffers();
+        if(offers != null) {
+            showOffers(offers);
+            boolean ok = true;
+            while (ok) {
+                Integer option = showSentOffersView();
+                if(option == 1) {
+                    showOffers(server.getBusinessOwnerController().filterByAcceptedOffers());
+                }
+                else if(option == 2) {
+                    showOffers(server.getBusinessOwnerController().filterByAcceptedOffers());
+                }
+                else if(option == 3) {
+                    ok = false;
+                }
+                else {
+                    wrongNumber();
+                }
             }
         }
     }
@@ -215,40 +284,32 @@ public class View {
         System.out.println("You can modify just products of the same type.");
         System.out.println("If you want to modify the type please delete the product and create one new.");
         System.out.println("Do you want to change the type of the product? (yes/ no)");
-        Scanner input = new Scanner(System.in);
-        boolean flag = true;
-        while (flag) {
-            String answer = input.nextLine();
-            if(answer.equals("yes") || answer.equals("y")) {
+        boolean flag = answer();
+        if(flag) {
                 System.out.println("Select the id of the product you want to delete");
                 deleteProductMenu();
                 createProductMenu();
-                flag = false;
-            }
-            else if (answer.equals("no") || answer.equals("n")) {
+        }else {
 
-                Product oldProduct = server.getProductController().getProduct(idProduct);
-                if(oldProduct instanceof Hall) {
-                    Hall hall = createHallView();
-                    server.getProductController().modifyHall((Hall) oldProduct, hall);
-                }
-                else if(oldProduct instanceof DJ) {
-                    DJ dj = createDJView();
-                    server.getProductController().modifyDj((DJ) oldProduct, dj);
-                }
-                else if(oldProduct instanceof CandyBar) {
-                    CandyBar candyBar = createCandyBarView();
-                    server.getProductController().modifyCandyBar((CandyBar) oldProduct, candyBar);
-                }
-                else {
-                    somethingWentWrong();
-                }
-                flag = false;
+            Product oldProduct = server.getProductController().getProduct(idProduct);
+            if(oldProduct instanceof Hall) {
+                Hall hall = createHallView();
+                server.getProductController().modifyHall((Hall) oldProduct, hall);
+            }
+            else if(oldProduct instanceof DJ) {
+                DJ dj = createDJView();
+                server.getProductController().modifyDj((DJ) oldProduct, dj);
+            }
+            else if(oldProduct instanceof CandyBar) {
+                CandyBar candyBar = createCandyBarView();
+                server.getProductController().modifyCandyBar((CandyBar) oldProduct, candyBar);
             }
             else {
-                System.out.println("Please insert yes or no!");
+                somethingWentWrong();
             }
+
         }
+
     }
 
     public void organiserMenu(String username) {
@@ -264,11 +325,11 @@ public class View {
            organiserMenu(username);
         }
         else if(option == 3) {
-            showSentMessages();
+            showSentMessagesSubmenu();
             organiserMenu(username);
         }
         else if(option == 4) {
-            showReceivedOffers();
+            showReceivedOffersSubmenu();
             organiserMenu(username);
         }
         else if(option == 5){
@@ -310,24 +371,132 @@ public class View {
         }
     }
 
-    public void showSentMessages() {
+    public Integer showSentMessagesView() {
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Select option: ");
+        System.out.println("1. Show accepted messages");
+        System.out.println("2. Show declined messages");
+        System.out.println("3. Exit");
+
+
+        Integer option = input.nextInt();
+
+        return option;
+
+    }
+
+
+    public void showSentMessagesSubmenu() {
+        List<Message> messages= checkForSentMessages();
+        if(messages != null) {
+            showMessages(messages);
+            boolean ok = true;
+            while (ok) {
+                Integer option = showSentMessagesView();
+                if(option == 1) {
+                    showMessages(server.getOrganiserController().filterByAcceptedMessages());
+                }
+                else if(option == 2) {
+                    showMessages(server.getOrganiserController().filterByDeclinedMessages());
+                }
+                else if(option == 3) {
+                    ok = false;
+                }
+                else {
+                    wrongNumber();
+                }
+            }
+        }
+
+    }
+
+    public List<Message> checkForSentMessages() {
         if(server.getOrganiserController().checkRequestedOffers()) { //daca lista de oferte cerute a org e goala
             noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
+            return null;
         }
-        else { //daca lista nu e goala
-            for (Message message : server.getOrganiserController().getOrganiser().getSentMessages()) { //pt fiecare msj din lista de oferte cerute a org
-                showMessage(message); //se afis msj
-            }
+        return server.getOrganiserController().getOrganiser().getSentMessages();
+    }
+
+    public void showMessages(List<Message> messages) {
+        for (Message message : messages) {
+            showMessage(message);
         }
     }
 
-    public void showReceivedOffers() {
+
+
+    public List<Offer> checkForReceivedOffer() {
         if(server.getOrganiserController().checkReceivedOffers()) {
             noSentMessages();
+            return null;
         }
-        else {
-            for (Offer offer : server.getOrganiserController().getOrganiser().getReceivedOffers()) {
-                showOffer(offer);
+        return server.getOrganiserController().getOrganiser().getReceivedOffers();
+    }
+
+    public void showOffers(List<Offer> offers) {
+        for (Offer offer : offers) {
+            showOffer(offer);
+        }
+
+    }
+
+    public Integer showReceivedOffersView() {
+
+        Scanner input = new Scanner(System.in);
+
+        System.out.println("Select option: ");
+        System.out.println("1. Show accepted offers");
+        System.out.println("2. Show declined offers");
+        System.out.println("3. Show offers by price ascending");
+        System.out.println("4. Show offers by price descending");
+        System.out.println("5. Show offers by sender");
+        System.out.println("6. Exit");
+
+
+        Integer option = input.nextInt();
+
+        return option;
+    }
+
+    public String getSenderUsername() {
+        Scanner input = new Scanner(System.in);
+        System.out.println("Please select the name of the sender");
+        String username = input.nextLine();
+        return username;
+    }
+
+    public void showReceivedOffersSubmenu() {
+        List<Offer> offers= checkForReceivedOffer();
+        if(offers != null) {
+            showOffers(offers);
+            boolean ok = true;
+            while (ok) {
+                Integer option = showReceivedOffersView();
+                if(option == 1) {
+                    showOffers(server.getOrganiserController().filterByAcceptedOffers());
+                }
+                else if(option == 2) {
+                    showOffers(server.getOrganiserController().filterByDeclinedOffers());
+                }
+                else if(option == 3) {
+                    showOffers(server.getOrganiserController().sortOffersByPriceAscending());
+                }
+                else if(option == 4) {
+                    showOffers(server.getOrganiserController().sortOffersByPriceDescending());
+                }
+                else if(option == 5) {
+
+                    String username = getSenderUsername();
+                    showOffers(server.getOrganiserController().filterOffersBySenderUsername(username));
+                }
+                else if(option == 6) {
+                    ok = false;
+                }
+                else {
+                    wrongNumber();
+                }
             }
         }
     }
@@ -577,6 +746,8 @@ public class View {
         return new Hall(name, description, location, capacity);
     }
 
+
+
     public DJ createDJView() {
         Scanner input = new Scanner(System.in);
         System.out.println("Name: ");
@@ -585,19 +756,9 @@ public class View {
         String description = input.nextLine();
 
         // facut teste sa raspunda corect
-        boolean lights = false;
-        System.out.println("Lights: yes/no");
-        String answer = input.nextLine();
-        if(answer.equals("yes") || answer.equals("y")) {
-            lights = true;
-        }
+        boolean lights = answer();
+        boolean stereo = answer();
 
-        boolean stereo = false;
-        System.out.println("Stereo: yes/no");
-        answer = input.nextLine();
-        if(answer.equals("yes") || answer.equals("y")) {
-            stereo = true;
-        }
         return new DJ(name, description, lights, stereo);
     }
 
@@ -611,13 +772,15 @@ public class View {
         boolean ok = true;
         ArrayList<Sweet> sweets = new ArrayList<>();
 
+        String sweetString = input.nextLine();
+
         while (ok) {
-            String sweetString = input.nextLine();
             if(sweetString.equals(" ") || sweetString.equals("\n") || sweetString.equals("")) {
                 ok = false;
             }
             Sweet sweet = new Sweet(sweetString);
             sweets.add(sweet);
+            sweetString = input.nextLine();
         }
         return new CandyBar(name, description, sweets);
     }
@@ -687,7 +850,6 @@ public class View {
     public void askOfferAccepting() {
         System.out.println("Do you want to accept an offer? (Yes/No)");
     }
-
     public boolean answer() {
         Scanner input = new Scanner(System.in);
         while(true) {
