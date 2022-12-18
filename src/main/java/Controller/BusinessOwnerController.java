@@ -42,7 +42,8 @@ public class BusinessOwnerController implements UserControllerInterface<Business
 
     public List<Product> getBusinessOwnerProducts() {
         List<Product> products = businessOwnerRepositoryJPA.findById(this.username).getProducts();
-        return products.stream().filter(product -> product.getStatusProduct().equals(StatusProduct.ACTIVE)).toList();
+//        return products.stream().filter(product -> product.getStatusProduct().equals(StatusProduct.ACTIVE)).toList();
+        return products;
     }
 
     @Override
@@ -73,6 +74,15 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         offerRepositoryJPA.add(offer);
         offerRepositoryJPA.updateStatus(offer, Status.SENT);
         messageRepositoryJPA.updateStatus(message, Status.ACCEPTED);
+    }
+
+    public void removeProduct(Integer idProduct) {
+        for(Product product : getBusinessOwner().getProducts()) {
+            if(product.getId() == idProduct) {
+                businessOwnerRepositoryJPA.removeProduct(username, product);
+                break;
+            }
+        }
     }
 
     @Override

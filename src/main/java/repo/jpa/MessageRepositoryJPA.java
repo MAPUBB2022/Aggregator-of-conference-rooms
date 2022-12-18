@@ -56,10 +56,8 @@ public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, In
 
     @Override
     public Message findById(Integer id) {
-        //manager.refresh(Message.class);
 
         Message message =  manager.find(Message.class, id);
-        //manager.refresh(message);
         return message;
     }
 

@@ -65,4 +65,14 @@ public abstract class Product {
         this.description = description;
     }
 
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", rating=" + rating +
+                ", description='" + description + '\'' +
+                ", statusProduct=" + statusProduct +
+                '}';
+    }
 }

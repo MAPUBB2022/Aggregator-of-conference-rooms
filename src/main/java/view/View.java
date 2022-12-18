@@ -206,13 +206,49 @@ public class View {
 
     public void deleteProductMenu(){
         Integer idProduct = getBusinessOwnerProductId();
+        server.getBusinessOwnerController().removeProduct(idProduct);
         server.getProductController().deleteProduct(idProduct);
     }
 
     public void modifyProductMenu() {
         Integer idProduct = getBusinessOwnerProductId();
-        Product newProduct = createProductView();
-        server.getProductController().modifyProduct(idProduct, newProduct);
+        System.out.println("You can modify just products of the same type.");
+        System.out.println("If you want to modify the type please delete the product and create one new.");
+        System.out.println("Do you want to change the type of the product? (yes/ no)");
+        Scanner input = new Scanner(System.in);
+        boolean flag = true;
+        while (flag) {
+            String answer = input.nextLine();
+            if(answer.equals("yes") || answer.equals("y")) {
+                System.out.println("Select the id of the product you want to delete");
+                deleteProductMenu();
+                createProductMenu();
+                flag = false;
+            }
+            else if (answer.equals("no") || answer.equals("n")) {
+
+                Product oldProduct = server.getProductController().getProduct(idProduct);
+                if(oldProduct instanceof Hall) {
+                    Hall hall = createHallView();
+                    server.getProductController().modifyHall((Hall) oldProduct, hall);
+                }
+                else if(oldProduct instanceof DJ) {
+                    DJ dj = createDJView();
+                    server.getProductController().modifyDj((DJ) oldProduct, dj);
+                }
+                else if(oldProduct instanceof CandyBar) {
+                    CandyBar candyBar = createCandyBarView();
+                    server.getProductController().modifyCandyBar((CandyBar) oldProduct, candyBar);
+                }
+                else {
+                    somethingWentWrong();
+                }
+                flag = false;
+            }
+            else {
+                System.out.println("Please insert yes or no!");
+            }
+        }
     }
 
     public void organiserMenu(String username) {
@@ -480,10 +516,8 @@ public class View {
         return null;
     }
     public Product createProductView() {
-        System.out.println("Product: ");
-
-        //se ret tipul de produs pe care il ofera businessOwner ul
         System.out.println("Enter the values of the product you offer: ");
+
         Integer option = selectTypeOfProduct();
         if(option == 1) {
             return createHallView();
@@ -505,7 +539,7 @@ public class View {
         int idProduct = input.nextInt();
         Product product = server.getProductController().getProduct(idProduct);
 
-        while (product == null | product.getStatusProduct().equals(StatusProduct.INACTIVE)) {
+        while (product == null || product.getStatusProduct().equals(StatusProduct.INACTIVE)) {
             System.out.println("Please insert a valid Id: ");
             showProducts(server.getProductController().getProducts());
             idProduct = input.nextInt();

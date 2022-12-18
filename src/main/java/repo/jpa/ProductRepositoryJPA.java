@@ -7,57 +7,28 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 import java.util.List;
 
-public class ProductRepositoryJPA implements ProductRepositoryInterface {
+public class ProductRepositoryJPA {
     private final EntityManager manager;
 
     public ProductRepositoryJPA(EntityManager manager) {
         this.manager = manager;
     }
 
-    @Override
-    public void add(Product newProduct) {
-        Product product = findById(newProduct.getId());
-        if (product == null) {
-            manager.getTransaction().begin();
-            manager.persist(newProduct);
-            manager.getTransaction().commit();
-        }
-    }
-
-    @Override
     public void remove(Integer id) {
         Product product = findById(id);
-        if (product != null) {
+        if( product != null) {
             manager.getTransaction().begin();
             product.setStatusProduct(StatusProduct.INACTIVE);
+            //manager.remove(product);
+            manager.flush();
             manager.getTransaction().commit();
-            product.setStatusProduct(StatusProduct.INACTIVE);
+            //product.setStatusProduct(StatusProduct.INACTIVE);
         }
 
-    }
-
-    @Override
-    public void update(Integer id, Product newProduct) {
-        Product product = findById(id);
-        if (product != null) {
-            manager.getTransaction().begin();
-            if (product.getClass() != newProduct.getClass()) {
-                product.setStatusProduct(StatusProduct.INACTIVE);
-                add(newProduct); // update la baza de date
-                product.setStatusProduct(StatusProduct.INACTIVE);
-            } else {
-                if (product instanceof Hall) {
-                    updateHall((Hall) product, (Hall) newProduct);
-                } else if (product instanceof CandyBar) {
-                    updateCandybar((CandyBar) product, (CandyBar) newProduct);
-                } else {
-                    updateDj((DJ) product, (DJ) newProduct);
-                }
-            }
-        }
     }
 
     public void updateHall(Hall hall, Hall newHall) {
+        manager.getTransaction().begin();
         hall.setName(newHall.getName());
         hall.setCapacity(newHall.getCapacity());
         hall.setLocation(newHall.getLocation());
@@ -66,12 +37,14 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
     }
 
     public void updateCandybar(CandyBar candyBar, CandyBar newCandyBar) {
+        manager.getTransaction().begin();
         candyBar.setName(newCandyBar.getName());
         candyBar.setDescription(newCandyBar.getDescription());
         manager.getTransaction().commit();
     }
 
     public void updateDj(DJ dj, DJ newDj) {
+        manager.getTransaction().begin();
         dj.setName(newDj.getName());
         dj.setDescription(newDj.getDescription());
         dj.setLights(newDj.getLights());
@@ -79,10 +52,13 @@ public class ProductRepositoryJPA implements ProductRepositoryInterface {
         manager.getTransaction().commit();
     }
 
-    @Override
     public Product findById(Integer id) {
-
-        return manager.find(Product.class, id);
+        System.out.println("ID: " + id);
+        Product product= manager.find(Product.class, id);
+        if(product != null) {
+            manager.refresh(product);
+        }
+        return product;
     }
 
     public List<Product> getProducts() {

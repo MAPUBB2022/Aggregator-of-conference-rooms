@@ -59,16 +59,22 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
         manager.getTransaction().commit();
     }
 
-    public void removeProduct(BusinessOwner businessOwner, Product product) {
+    public void removeProduct(String username, Product product) {
         manager.getTransaction().begin();
-        manager.merge(businessOwner).getProducts().remove(product);
+        BusinessOwner businessOwner = findById(username);
+        businessOwner.getProducts().remove(product);
         manager.getTransaction().commit();
     }
 
 
     @Override
     public BusinessOwner findById(String username) {
-        return manager.find(BusinessOwner.class, username);
+
+        BusinessOwner businessOwner =  manager.find(BusinessOwner.class, username);
+        if(businessOwner != null) {
+            manager.refresh(businessOwner);
+        }
+        return businessOwner;
     }
 
 

@@ -1,5 +1,8 @@
 package Controller;
 
+import model.CandyBar;
+import model.DJ;
+import model.Hall;
 import model.Product;
 import repo.jpa.ProductRepositoryJPA;
 
@@ -23,10 +26,20 @@ public class ProductController {
 
     public void deleteProduct(Integer idProduct){
         productRepositoryJPA.remove(idProduct);
+
     }
 
-    public void modifyProduct(Integer idProduct, Product newProduct) {
-        productRepositoryJPA.update(idProduct, newProduct);
+    public void modifyHall(Hall oldHall, Hall newHall) {
+        productRepositoryJPA.updateHall(oldHall, newHall);
     }
+
+    public void modifyDj(DJ oldDj, DJ newDj) {
+        productRepositoryJPA.updateDj(oldDj, newDj);
+    }
+
+    public void modifyCandyBar(CandyBar oldCandyBar, CandyBar newCandyBar) {
+        productRepositoryJPA.updateCandybar(oldCandyBar, newCandyBar);
+    }
+
 
 }

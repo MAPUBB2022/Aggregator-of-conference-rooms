@@ -54,7 +54,12 @@ public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
 
     @Override
     public Organiser findById(String username) {
-        return manager.find(Organiser.class, username);
+
+        Organiser organiser = manager.find(Organiser.class, username);
+        if(organiser != null) {
+            manager.refresh(organiser);
+        }
+        return organiser;
     }
 
     @Override
