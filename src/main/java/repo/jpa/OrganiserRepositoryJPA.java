@@ -10,10 +10,14 @@ import javax.persistence.Query;
 
 public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
 
-    private final EntityManager manager;
+    private EntityManager manager;
 
     public OrganiserRepositoryJPA(EntityManager manager) {
         this.manager = manager;
+    }
+
+    public OrganiserRepositoryJPA() {
+
     }
 
     @Override

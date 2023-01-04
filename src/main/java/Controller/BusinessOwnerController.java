@@ -5,15 +5,11 @@ import model.*;
 import repo.jpa.BusinessOwnerRepositoryJPA;
 import repo.jpa.MessageRepositoryJPA;
 import repo.jpa.OfferRepositoryJPA;
-import repo.jpa.ProductRepositoryJPA;
 
-
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.List;
 
 
-public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, ArrayList<String>> {
+public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, List<String>> {
     private String username;
 
     private BusinessOwnerRepositoryJPA businessOwnerRepositoryJPA;
@@ -46,7 +42,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     @Override
-    public BusinessOwner createUser(ArrayList<String> credentials) {
+    public BusinessOwner createUser(List<String> credentials) {
         return new BusinessOwner(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
 
     }
@@ -57,8 +53,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public boolean checkReceivedMessages() {
-        List<Message> newMessages = getBusinessOwner().getReceivedMessages();
-        return newMessages.isEmpty();
+        return getBusinessOwner().getReceivedMessages().isEmpty();
     }
     public boolean checkSentOffers() {
         return getBusinessOwner().getSentOffers().isEmpty();

@@ -2,18 +2,12 @@ package Controller;
 
 import interfaces.UserControllerInterface;
 import model.*;
-import repo.inMemory.BusinessOwnerInMemoryRepository;
-import repo.inMemory.OrganiserInMemoryRepository;
-import repo.inMemory.ProductsInMemoryRepository;
 import repo.jpa.*;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class OrganiserController implements UserControllerInterface<Organiser, ArrayList<String>> {
+public class OrganiserController implements UserControllerInterface<Organiser, List<String>> {
 
     private String username;
 
@@ -43,7 +37,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
 
 
     @Override
-    public Organiser createUser(ArrayList<String> credentials) {
+    public Organiser createUser(List<String> credentials) {
         return new Organiser(credentials.get(1), credentials.get(2), credentials.get(3), credentials.get(4));
     }
 
@@ -67,7 +61,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
         return getOrganiser().getReceivedOffers().isEmpty();
     }
 
-    public boolean checkRequestedOffers() {
+    public boolean checkSentMessages() {
         return getOrganiser().getSentMessages().isEmpty();
     }
 
@@ -80,7 +74,7 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     @Override
     public List<Message> filterByDeclinedMessages(){
 
-        List<Message> messages = organiserRepositoryJPA.findById(this.username).getSentMessages();
+        List<Message> messages = getOrganiser().getSentMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.DECLINED)).toList();
     }
@@ -88,39 +82,39 @@ public class OrganiserController implements UserControllerInterface<Organiser, A
     @Override
     public List<Message> filterByAcceptedMessages(){
 
-        List<Message> messages = organiserRepositoryJPA.findById(this.username).getSentMessages();
+        List<Message> messages = getOrganiser().getSentMessages();
 
         return messages.stream().filter(message -> message.getStatus().equals(Status.ACCEPTED)).toList();
     }
     @Override
     public List<Offer> filterByDeclinedOffers(){
 
-        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
+        List<Offer> offers = getOrganiser().getReceivedOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.DECLINED)).toList();
     }
     @Override
     public List<Offer> filterByAcceptedOffers(){
 
-        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
+        List<Offer> offers = getOrganiser().getReceivedOffers();
 
         return offers.stream().filter(offer -> offer.getStatus().equals(Status.ACCEPTED)).toList();
     }
 
     public List<Offer> sortOffersByPriceAscending() {
-        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
+        List<Offer> offers = getOrganiser().getReceivedOffers();
 
         return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice)).toList();
     }
 
     public List<Offer> sortOffersByPriceDescending() {
-        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
+        List<Offer> offers = getOrganiser().getReceivedOffers();
 
         return offers.stream().sorted(Comparator.comparingInt(Offer::getPrice).reversed()).toList();
     }
 
     public List<Offer> filterOffersBySenderUsername(String usernameSender) {
-        List<Offer> offers = organiserRepositoryJPA.findById(this.username).getReceivedOffers();
+        List<Offer> offers = getOrganiser().getReceivedOffers();
         return offers.stream().filter(offer -> offer.getSender().getUsername().equals(usernameSender)).toList();
     }
 

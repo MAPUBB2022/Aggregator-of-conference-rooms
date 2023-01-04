@@ -10,11 +10,15 @@ import java.util.stream.Collectors;
 
 public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterface {
 
-    private final EntityManager manager;
+    private EntityManager manager;
 
 
     public BusinessOwnerRepositoryJPA(EntityManager manager) {
         this.manager = manager;
+    }
+
+    public BusinessOwnerRepositoryJPA() {
+
     }
 
     @Override

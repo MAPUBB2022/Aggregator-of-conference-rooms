@@ -1,17 +1,11 @@
 package Controller;
-
-import interfaces.BusinessOwnerRepositoryInterface;
-import interfaces.OrganiserRepositoryInterface;
-import interfaces.ProductRepositoryInterface;
 import model.BusinessOwner;
 import model.Organiser;
-import model.Product;
 import repo.jpa.*;
 
 
 import javax.persistence.EntityManager;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
@@ -22,24 +16,20 @@ public class Server {
     private ProductController productController;
     private  OrganiserRepositoryJPA organisersRepositoryJPA;
     private  BusinessOwnerRepositoryJPA businessOwnersRepositoryJPA;
-    private  ProductRepositoryJPA productRepositoryJPA;
-
-    private MessageRepositoryJPA messageRepositoryJPA;
-
-    private OfferRepositoryJPA offerRepositoryJPA;
 
 
     public Server(EntityManager manager) {
         this.organisersRepositoryJPA = new OrganiserRepositoryJPA(manager);
         this.businessOwnersRepositoryJPA = new BusinessOwnerRepositoryJPA(manager);
-        this.productRepositoryJPA = new ProductRepositoryJPA(manager);
-        this.messageRepositoryJPA = new MessageRepositoryJPA(manager);
-        this.offerRepositoryJPA = new OfferRepositoryJPA(manager);
+        ProductRepositoryJPA productRepositoryJPA = new ProductRepositoryJPA(manager);
+        MessageRepositoryJPA messageRepositoryJPA = new MessageRepositoryJPA(manager);
+        OfferRepositoryJPA offerRepositoryJPA = new OfferRepositoryJPA(manager);
 
-        this.businessOwnerController = new BusinessOwnerController(this.businessOwnersRepositoryJPA, this.messageRepositoryJPA, this.offerRepositoryJPA);
-        this.organiserController = new OrganiserController(this.organisersRepositoryJPA, this.messageRepositoryJPA, this.offerRepositoryJPA);
-        this.productController = new ProductController(this.productRepositoryJPA);
+        this.businessOwnerController = new BusinessOwnerController(this.businessOwnersRepositoryJPA, messageRepositoryJPA, offerRepositoryJPA);
+        this.organiserController = new OrganiserController(this.organisersRepositoryJPA, messageRepositoryJPA, offerRepositoryJPA);
+        this.productController = new ProductController(productRepositoryJPA);
     }
+
 
     public OrganiserController getOrganiserController() {
         return organiserController;
@@ -56,7 +46,7 @@ public class Server {
     public Server() {
     }
 
-    public boolean login(ArrayList<String> credentials) {
+    public boolean login(List<String> credentials) {
 
         if (credentials.get(0).equals("1") && organisersRepositoryJPA.findByUsernameAndPassword(credentials.get(1), credentials.get(2)) != null) { //daca e org si s-a gasit in bd (are cont)
             return true; //se dechide meniul pt organiser
@@ -66,13 +56,13 @@ public class Server {
         }
        return false;
     }
-    public boolean signUp(ArrayList<String> credentials) {
+    public boolean signUp(List<String> credentials) {
         if(credentials.get(0).equals("1")) { //daca in string ul de credetiale, e organiser
-            organisersRepositoryJPA.add(organiserController.createUser(credentials)); //se creeaza un user cu acele credentiale => se ret un org si apoi se adauga la acea instanta unica
+            organisersRepositoryJPA.add(getOrganiserController().createUser(credentials)); //se creeaza un user cu acele credentiale => se ret un org si apoi se adauga la acea instanta unica
             return true;
         }
         if (credentials.get(0).equals("2")) { //daca in string ul de credetiale, e b.o
-            businessOwnersRepositoryJPA.add(businessOwnerController.createUser(credentials)); //se creeaza un user cu acele credentiale => se ret un b.o. si apoi se adauga la acea instanta unica
+            businessOwnersRepositoryJPA.add(getBusinessOwnerController().createUser(credentials)); //se creeaza un user cu acele credentiale => se ret un b.o. si apoi se adauga la acea instanta unica
             return true;
         }
         return false;

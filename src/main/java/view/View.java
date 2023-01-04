@@ -16,6 +16,7 @@ public class View {
         this.server = new Server(manager);
     }
 
+
     public void runProgram() throws InvalidDataException {
         while(true) {
             int option = welcomeView(); //se alege din exact primul meniu o opt -login/signup/exit
@@ -33,7 +34,7 @@ public class View {
     }
 
     public void signUpMenu() throws InvalidDataException {
-        ArrayList<String> credentials = signupView(); //ret un string format din datele de la SignUp
+        List<String> credentials = signupView(); //ret un string format din datele de la SignUp
         boolean flag = server.signUp(credentials);
         if(flag) {
             userCreatedSuccessfully();
@@ -60,9 +61,9 @@ public class View {
     }
 
     //met ce returneaza un string de credentiale format din DI (tipUser + username + passw)
-    public ArrayList<String> loginView() throws InvalidDataException {
+    public List<String> loginView() throws InvalidDataException {
         Scanner input = new Scanner(System.in);
-        ArrayList<String> credentials = new ArrayList<>();
+        List<String> credentials = new ArrayList<>();
 
         System.out.println("Select:");
         boolean ok = true;
@@ -93,7 +94,7 @@ public class View {
     }
 
     public void loginMenu() throws InvalidDataException {
-        ArrayList<String> credentials = loginView(); //string de credentiale  format din (tipUser + username + passw)
+        List<String> credentials = loginView(); //string de credentiale  format din (tipUser + username + passw)
         boolean isUser = server.login(credentials);
         if(isUser) {
             if(credentials.get(0).equals("1"))
@@ -428,7 +429,7 @@ public class View {
     }
 
     public List<Message> checkForSentMessages() throws InvalidDataException {
-        if(server.getOrganiserController().checkRequestedOffers()) { //daca lista de oferte cerute a org e goala
+        if(server.getOrganiserController().checkSentMessages()) { //daca lista de oferte cerute a org e goala
             //noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
             throw new InvalidDataException("You haven't sent any messages yet\n");
             //return null;
@@ -529,7 +530,7 @@ public class View {
     }
 
     //metoda ce ret un string de credentiale obtinute din signUp (cu validarile necesare de username daca acesta a mai fost folosit sau nu)
-    public ArrayList<String> signupView() throws InvalidDataException {
+    public List<String> signupView() throws InvalidDataException {
         Scanner input = new Scanner(System.in);
         System.out.println("Sign up form: ");
         System.out.println("First Name:");
@@ -576,7 +577,7 @@ public class View {
             }
         }
 
-        ArrayList<String> credentials = new ArrayList<>(Arrays.asList(userType, firstName, lastName, username, password));
+        List<String> credentials = new ArrayList<>(Arrays.asList(userType, firstName, lastName, username, password));
         return credentials;
 
     }
@@ -792,7 +793,7 @@ public class View {
         String description = input.nextLine();
         System.out.println("Add sweets: ");
         boolean ok = true;
-        ArrayList<Sweet> sweets = new ArrayList<>();
+        List<Sweet> sweets = new ArrayList<>();
 
         String sweetString = input.nextLine();
 

@@ -58,7 +58,4 @@ public abstract class User {
         this.password = password;
     }
 
-//    public ArrayList<Message> getRequestedOffers() {
-//        return requestedOffers;
-//    }
 }
