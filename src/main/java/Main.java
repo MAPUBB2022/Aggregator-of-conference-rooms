@@ -12,6 +12,8 @@ public class Main {
         EntityManagerFactory factory = Persistence.createEntityManagerFactory("default");
         EntityManager manager = factory.createEntityManager();
 
+
+
         View view = new View(manager);
         view.runProgram();
 

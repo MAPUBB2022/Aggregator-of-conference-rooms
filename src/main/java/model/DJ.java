@@ -35,15 +35,15 @@ public class DJ extends Product {
         this.stereo =stereo;
     }
 
-    @Override
-    public String toString() {
-        return "Id: " + getId() +"\n"+
-                "Product: " + getName() +"\n"+
-                "Rating: " + getRating() +"\n"+
-                "Stereo: " + stereo + "\n"+
-                "Lights: " + lights + "\n"+
-                "Description: " + getDescription() + "\n";
-
-    }
+//    @Override
+//    public String toString() {
+//        return "Id: " + getId() +"\n"+
+//                "Name: " + getName() +"\n"+
+//                "Rating: " + getRating() +"\n"+
+//                "Stereo: " + stereo + "\n"+
+//                "Lights: " + lights + "\n"+
+//                "Description: " + getDescription() + "\n";
+//
+//    }
 
 }

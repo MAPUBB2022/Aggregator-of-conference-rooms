@@ -3,6 +3,7 @@ package view;
 
 import Controller.Server;
 import model.*;
+import org.hibernate.engine.transaction.jta.platform.internal.SynchronizationRegistryBasedSynchronizationStrategy;
 
 import javax.persistence.EntityManager;
 import java.util.*;
@@ -16,20 +17,29 @@ public class View {
         this.server = new Server(manager);
     }
 
+    List<Hall> allHalls=new ArrayList<>();
+    List<DJ> allDjs=new ArrayList<>();
+    List<CandyBar> allCandyBars=new ArrayList<>();
 
     public void runProgram() throws InvalidDataException {
-        while(true) {
-            int option = welcomeView(); //se alege din exact primul meniu o opt -login/signup/exit
-            if(option == 1) {
-                loginMenu();
-            } else if (option == 2) {
-                signUpMenu();
-            } else if (option == 0) {
-                break;
-            } else {
-                //wrongNumber();
-                throw new InvalidDataException("The number you typed is invalid!");
+        try {
+            while (true) {
+                int option = welcomeView(); //se alege din exact primul meniu o opt -login/signup/exit
+                if (option == 1) {
+                    loginMenu();
+                } else if (option == 2) {
+                    signUpMenu();
+                } else if (option == 0) {
+                    break;
+                } else {
+                    //wrongNumber();
+                    throw new InvalidDataException("The number you typed is invalid!");
+                }
             }
+        } catch (Exception e) { //numele erorii stiute de calc, nu scrisa in cod (fara suprascriere)
+            System.out.println("Error: " + e.toString());
+        }finally {
+            runProgram();
         }
     }
 
@@ -48,10 +58,8 @@ public class View {
 
     public int welcomeView() {
         Scanner input = new Scanner(System.in); //cls Scanner e folosita pt a lua input-ul user ului
-
         System.out.println("Welcome!");
-        System.out.println("Select option: ");
-        System.out.println("0. Exit");
+        System.out.println("Select option: ");System.out.println("0. Exit");
         System.out.println("1. Login");
         System.out.println("2. SignUp");
 
@@ -72,15 +80,15 @@ public class View {
             System.out.println("1-event organiser");
             System.out.println("2-business owner");
             userType = input.nextLine(); //nextLine() - citeste un string a user-ului
-            if(userType.equals("1") || userType.equals("2")) {
-                ok = false;
-            }
-            else {
-                //wrongNumber();
-                throw new InvalidDataException("The number you typed is invalid!");
-            }
-        }
+                if (userType.equals("1") || userType.equals("2")) {
+                    ok = false;
 
+                } else {
+                    //wrongNumber();
+                    // System.out.println("The number you typed is invalid!");
+                    throw new InvalidDataException("The number you typed is invalid!");
+                }
+            }
         System.out.println("username: ");
         String username = input.nextLine();
         System.out.println("password: ");
@@ -93,22 +101,25 @@ public class View {
         return credentials;
     }
 
+
     public void loginMenu() throws InvalidDataException {
         List<String> credentials = loginView(); //string de credentiale  format din (tipUser + username + passw)
         boolean isUser = server.login(credentials);
-        if(isUser) {
-            if(credentials.get(0).equals("1"))
-                organiserMenu(credentials.get(1));
-            else if(credentials.get(0).equals("2"))
-                businessOwnerMenu(credentials.get(1));
-        }
-        else {
-            //wrongCredentials();
+        try {
+            if (isUser) {
+                if (credentials.get(0).equals("1"))
+                    organiserMenu(credentials.get(1));
+                else if (credentials.get(0).equals("2"))
+                    businessOwnerMenu(credentials.get(1));
+            } else {
+                throw new InvalidDataException("Wrong username or password please try again");//wrongCredentials();
+            }
+        }catch (Exception e) { //numele erorii stiute de calc, nu scrisa in cod (fara suprascriere)
+                System.out.println("Error: " + e.toString());
+        }finally {
             loginMenu();
-            throw new InvalidDataException("Wrong username or password please try again");
         }
     }
-
 
 
     public void businessOwnerMenu(String username) throws InvalidDataException {
@@ -117,7 +128,7 @@ public class View {
         server.getBusinessOwnerController().getBusinessOwner();
         if(option == 1) {
            showProducts(server.getBusinessOwnerController().getBusinessOwnerProducts());
-            businessOwnerMenu(username);
+           businessOwnerMenu(username);
         }
         else if(option == 2) {
             newMessagesMenu();
@@ -146,17 +157,16 @@ public class View {
         else if(option == 8) {
             return;
         }
-        else {
-            businessOwnerMenu(username);
-            //wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
-            throw new InvalidDataException("The number you typed is invalid!");
-        }
+//        else {
+//            WrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
+//            throw new InvalidDataException("The number you typed is invalid!");
+//        }
     }
 
-    public void newMessagesMenu() throws InvalidDataException {
+    public void newMessagesMenu() {
         if (server.getBusinessOwnerController().checkNewMessages()) { //daca lista de oferte cerute a b.o. e goala
-            //noNewMessages(); //nu exista msj nou
-            throw new InvalidDataException("Nothing new...Check again later!");
+            noNewMessages(); //nu exista msj nou
+            //throw new InvalidDataException("Nothing new...Check again later!");
         }
         List<Message> messages = new CopyOnWriteArrayList<Message>(server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages());
         for (Message message : messages) { //pt fiecare mesaj a org catre b.o. din lista de oferte cerute
@@ -169,8 +179,8 @@ public class View {
                     offerSent(); //apare msj de oferta creata cu succes
                 } else { //daca rasp e nu
                     server.getBusinessOwnerController().declineMessage(message); //se set starea msj la DECLINED
-                    //messageDeclined(); //apare msj de declined
-                    throw new InvalidDataException("Message declined!\n");
+                    messageDeclined(); //apare msj de declined
+                    //throw new InvalidDataException("Message declined!\n");
                 }
             }
         }
@@ -181,10 +191,10 @@ public class View {
         server.getBusinessOwnerController().makeOffer(offer, message);
     }
 
-    public List<Message> checkForReceivedMessages() throws InvalidDataException {
+    public List<Message> checkForReceivedMessages()  {
         if (server.getBusinessOwnerController().checkReceivedMessages()) { //daca lista de oferte cerute a b.o. e goala
-            //noMessages();
-            throw new InvalidDataException("Nothing new...Check again later!");
+            noMessages();
+            //throw new InvalidDataException("Nothing new...Check again later!");
             //return null;
         }
         return server.getBusinessOwnerController().getBusinessOwner().getReceivedMessages();
@@ -226,19 +236,18 @@ public class View {
                 else if(option == 4) {
                     ok = false;
                 }
-                else {
-                    //wrongNumber();
-                    throw new InvalidDataException("The number you typed is invalid!");
-                }
+//                else {
+//                    //wrongNumber();
+//                    throw new InvalidDataException("The number you typed is invalid!");
+//                }
             }
         }
-
     }
 
-    public List<Offer> checkForSentOffers() throws InvalidDataException {
+    public List<Offer> checkForSentOffers() {
         if(server.getBusinessOwnerController().checkSentOffers()) { //daca lista de oferte trimise a b.o. e goala
-            //noOffers(); //apare msj ca nu ai ce oferte sa vezi
-            throw new InvalidDataException("You haven't made any offer yet\n");
+            noOffers(); //apare msj ca nu ai ce oferte sa vezi
+            //throw new InvalidDataException("You haven't made any offer yet\n");
             //return null;
         }
         return server.getBusinessOwnerController().getBusinessOwner().getSentOffers();
@@ -271,7 +280,7 @@ public class View {
                     showOffers(server.getBusinessOwnerController().filterByAcceptedOffers());
                 }
                 else if(option == 3) {
-                    ok = false;
+                   ok = false;
                 }
                 else {
                     //wrongNumber();
@@ -298,32 +307,34 @@ public class View {
         System.out.println("If you want to modify the type please delete the product and create one new.");
         System.out.println("Do you want to change the type of the product? (yes/ no)");
         boolean flag = answer();
-        if(flag) {
+        try {
+            if (flag) {
                 System.out.println("Select the id of the product you want to delete");
                 deleteProductMenu();
                 createProductMenu();
-        }else {
+            } else {
 
-            Product oldProduct = server.getProductController().getProduct(idProduct);
-            if(oldProduct instanceof Hall) {
-                Hall hall = createHallView();
-                server.getProductController().modifyHall((Hall) oldProduct, hall);
-            }
-            else if(oldProduct instanceof DJ) {
-                DJ dj = createDJView();
-                server.getProductController().modifyDj((DJ) oldProduct, dj);
-            }
-            else if(oldProduct instanceof CandyBar) {
-                CandyBar candyBar = createCandyBarView();
-                server.getProductController().modifyCandyBar((CandyBar) oldProduct, candyBar);
-            }
-            else {
-                //somethingWentWrong();
-                throw new InvalidDataException("Something went wrong...! Please try again later!");
-            }
+                Product oldProduct = server.getProductController().getProduct(idProduct);
+                if (oldProduct instanceof Hall) {
+                    Hall hall = createHallView();
+                    server.getProductController().modifyHall((Hall) oldProduct, hall);
+                } else if (oldProduct instanceof DJ) {
+                    DJ dj = createDJView();
+                    server.getProductController().modifyDj((DJ) oldProduct, dj);
+                } else if (oldProduct instanceof CandyBar) {
+                    CandyBar candyBar = createCandyBarView();
+                    server.getProductController().modifyCandyBar((CandyBar) oldProduct, candyBar);
+                } else {
+                    //somethingWentWrong();
+                    throw new InvalidDataException("Something went wrong...! Please try again later!");
+                }
 
+            }
+        } catch (Exception e) { //numele erorii stiute de calc, nu scrisa in cod (fara suprascriere)
+            System.out.println("Error: " + e.toString());
+        }finally {
+            modifyProductMenu();
         }
-
     }
 
     public void organiserMenu(String username) throws InvalidDataException {
@@ -354,15 +365,15 @@ public class View {
         else if(option == 6) {
             return;
         }
-        else {
-            organiserMenu(username);
-            //wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
-            throw new InvalidDataException("The number you typed is invalid!");
-        }
+//        else {
+//            organiserMenu(username);
+//            //wrongNumber(); //se face o alta alegere din meniu pt ca optiunea nu a fost valida
+//            throw new InvalidDataException("The number you typed is invalid!");
+//        }
     }
 
 
-    public void showNewOffersMenu() throws InvalidDataException {
+    public void showNewOffersMenu()  {
         if(server.getOrganiserController().checkNewReceivedOffers()) { //daca lista de oferte primite a org e goala
             noNewMessages(); //nu exita msj nou
         }
@@ -379,8 +390,8 @@ public class View {
                         offerAccepted(); //apare msj cu oferta acceptata
                     } else {
                         server.getOrganiserController().declineOffer(offer); //status ul ofertei devine DECLINED
-                        //offerDeclined(); //apare msj cu oferta respinsa
-                        throw new InvalidDataException("Offer declined!\n");
+                        offerDeclined(); //apare msj cu oferta respinsa
+                        //throw new InvalidDataException("Offer declined!\n");
                     }
                 }
             }
@@ -428,10 +439,10 @@ public class View {
 
     }
 
-    public List<Message> checkForSentMessages() throws InvalidDataException {
+    public List<Message> checkForSentMessages() {
         if(server.getOrganiserController().checkSentMessages()) { //daca lista de oferte cerute a org e goala
-            //noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
-            throw new InvalidDataException("You haven't sent any messages yet\n");
+            noSentMessages(); //apare msj ca nu ai trimis inca niciun msj
+            //throw new InvalidDataException("You haven't sent any messages yet\n");
             //return null;
         }
         return server.getOrganiserController().getOrganiser().getSentMessages();
@@ -445,10 +456,10 @@ public class View {
 
 
 
-    public List<Offer> checkForReceivedOffer() throws InvalidDataException {
+    public List<Offer> checkForReceivedOffer() {
         if(server.getOrganiserController().checkReceivedOffers()) {
-            throw new InvalidDataException("You haven't sent any messages yet\n");
-            //return null;
+            //throw new InvalidDataException("You haven't sent any messages yet\n");
+            return null;
         }
         return server.getOrganiserController().getOrganiser().getReceivedOffers();
     }
@@ -596,9 +607,11 @@ public class View {
     }
 
 
-    public int businessOwnerView() {
+    public int businessOwnerView(){
         Scanner input = new Scanner(System.in);
-
+        String option = null;
+        int number=1;
+        boolean flag=false;
         System.out.println("Select: ");
         System.out.println("1. Show your Products");
         System.out.println("2. Show new Messages");
@@ -607,10 +620,28 @@ public class View {
         System.out.println("5. Create product");
         System.out.println("6. Delete product");
         System.out.println("7. Modify product");
-        System.out.println("8 Log out");
-        int option = input.nextInt();
+        System.out.println("8. Log out");
+        while (!flag) {
+                option = input.nextLine();
+                if (option.length() == 1 && option.charAt(0) >= '0' && option.charAt(0) <= '9') {
+                    flag = true;
+                } else {
+                System.out.println("Please insert a valid number!");
+                System.out.println("Select: ");
+                System.out.println("1. Show your Products");
+                System.out.println("2. Show new Messages");
+                System.out.println("3. Show all Messages");
+                System.out.println("4. Show all Offers");
+                System.out.println("5. Create product");
+                System.out.println("6. Delete product");
+                System.out.println("7. Modify product");
+                System.out.println("8. Log out");
 
-        return option;
+
+            }
+        }
+        //} while(flag);
+        return (option.charAt(0) - '0');
     }
 
     public int organiserView(){
@@ -629,33 +660,76 @@ public class View {
 
     }
 
-    public void showCandyBar(CandyBar candyBar){
-        System.out.println("Id:" + candyBar.getId());
-        System.out.println("Product: " + candyBar.getName());
-        System.out.println("Rating: " + candyBar.getRating());
-        System.out.println("Sweets: " + Arrays.asList(candyBar.getSweets()));
-        System.out.println("Description: " + candyBar.getDescription() + "\n");
+    public void showCandyBar(List<CandyBar> allCandyBars){
+        System.out.println("---------------------------------------------------------------------------------------------");
+        System.out.printf("%-15s %-17s %-20s %-20s %-20s", "ID CANDYBAR", "NAME", "RATING", "DESCRIPTION", "SWEETS");
+        System.out.println();
+        System.out.println("---------------------------------------------------------------------------------------------");
 
+        for(CandyBar candyBar1: allCandyBars) {
+            System.out.format("%-15s %-17s %-20s %-19s %-30s", candyBar1.getId(), candyBar1.getName(), candyBar1.getRating(), candyBar1.getDescription(), Arrays.asList(candyBar1.getSweets()));
+            System.out.println();
+        }
+        System.out.println("---------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+    }
+
+    public void showDJ(List<DJ> allDjs){
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%-15s %-17s %-20s %-20s %-20s %-20s", "ID DJ", "NAME", "RATING", "STEREO", "LIGHTS", "DESCRIPTION");
+        System.out.println();
+        System.out.println("-----------------------------------------------------------------------------------------------------------------");
+
+        for(DJ dj: allDjs) {
+            System.out.format("%-15s %-17s %-20s %-19s %-25s %-10s", dj.getId(), dj.getName(), dj.getRating(), dj.getStereo(), dj.getLights(), dj.getDescription());
+            System.out.println();
+        }
+        System.out.println("----------------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
+    }
+
+    public void showHall(List<Hall> allHalls){
+        System.out.println("-------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%-15s %-17s %-20s %-20s %-20s %-20s", "ID HALL", "NAME", "RATING", "LOCATION", "CAPACITY", "DESCRIPTION");
+        System.out.println();
+        System.out.println("-------------------------------------------------------------------------------------------------------------------");
+
+        for(Hall hall: allHalls) {
+            System.out.format("%-15s %-17s %-20s %-19s %-25s %-20s", hall.getId(), hall.getName(), hall.getRating(), hall.getLocation(), hall.getCapacity(), hall.getDescription());
+            System.out.println();
+        }
+        System.out.println("-------------------------------------------------------------------------------------------------------------------");
+        System.out.println();
+        System.out.println();
     }
 
 
     public void showProducts(List<Product> products) throws InvalidDataException {
+
         if(products.isEmpty()) {
             System.out.println("There are no products listed\n");
         }
         else {
             for(Product product : products) {
-                if (product instanceof Hall) {
-                    System.out.println((Hall) product);
-                } else if (product instanceof DJ) {
-                    System.out.println((DJ) product);
-                } else if (product instanceof CandyBar) {
-                    showCandyBar((CandyBar) product);
+                if (product instanceof Hall && !allHalls.contains(product)) {
+                    allHalls.add((Hall) product);
+                } else if (product instanceof DJ && !allDjs.contains(product)) {
+                    allDjs.add((DJ) product);
+                } else if (product instanceof CandyBar && !allCandyBars.contains(product)) {
+                    allCandyBars.add((CandyBar) product);
                 } else {
                     //somethingWentWrong();
                     throw new InvalidDataException("Something went wrong...! Please try again later!");
                 }
             }
+            if(!allHalls.isEmpty())
+              showHall(allHalls);
+            if(!allDjs.isEmpty())
+                showDJ(allDjs);
+            if(!allCandyBars.isEmpty())
+                showCandyBar(allCandyBars);
         }
     }
     public void showOffer(Offer offer) {
@@ -690,6 +764,9 @@ public class View {
             System.out.println("2- Dj");
             System.out.println("3- Candybar");
             option = input.nextInt();
+            if(option == 0) {
+                return 0;
+            }
             if(option == 1) {
                 return 1;
             }
@@ -708,7 +785,7 @@ public class View {
         //return null;
     }
     public Product createProductView() throws InvalidDataException {
-        System.out.println("Enter the values of the product you offer: ");
+        System.out.println("Enter the values of the product you offer, but before: ");
 
         Integer option = selectTypeOfProduct();
         if(option == 1) {
@@ -732,7 +809,7 @@ public class View {
         Product product = server.getProductController().getProduct(idProduct);
 
         while (product == null || product.getStatusProduct().equals(StatusProduct.INACTIVE)) {
-            System.out.println("Please insert a valid Id: ");
+            System.out.println("Please insert a valid Id from the list of existing products: ");
             showProducts(server.getProductController().getProducts());
             idProduct = input.nextInt();
             product = server.getProductController().getProduct(idProduct);
@@ -748,7 +825,7 @@ public class View {
         int idProduct = input.nextInt();
 
         while (!server.getBusinessOwnerController().isBusinessOwnerProduct(idProduct)) {
-            System.out.println("Please insert a valid Id: ");
+            System.out.println("Please insert a valid Id from the list of existing products: ");
             showProducts(server.getBusinessOwnerController().getBusinessOwnerProducts());
             idProduct = input.nextInt();
         }
@@ -757,7 +834,7 @@ public class View {
 
     public Hall createHallView() {
         Scanner input = new Scanner(System.in);
-        System.out.println("Name: ");
+        System.out.println("Name of Product: ");
         String name = input.nextLine();
         System.out.println("Description: ");
         String description = input.nextLine();
@@ -779,7 +856,9 @@ public class View {
         String description = input.nextLine();
 
         // facut teste sa raspunda corect
+        System.out.println("Do you want lights? ");
         boolean lights = answer();
+        System.out.println("Do you want stereo? ");
         boolean stereo = answer();
 
         return new DJ(name, description, lights, stereo);
@@ -797,10 +876,7 @@ public class View {
 
         String sweetString = input.nextLine();
 
-        while (ok) {
-            if(sweetString.equals(" ") || sweetString.equals("\n") || sweetString.equals("")) {
-                ok = false;
-            }
+        while (!sweetString.isEmpty()) {
             Sweet sweet = new Sweet(sweetString);
             sweets.add(sweet);
             sweetString = input.nextLine();
