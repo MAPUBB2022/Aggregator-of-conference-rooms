@@ -13,7 +13,6 @@ public class Main {
         EntityManager manager = factory.createEntityManager();
 
 
-
         View view = new View(manager);
         view.runProgram();
 
