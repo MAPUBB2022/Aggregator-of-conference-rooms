@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="AggregatorOfConferenceRooms@localhost [3]" uuid="18f6d295-f87d-4891-9d33-a5ff19732116">
+    <data-source source="LOCAL" name="AggregatorOfConferenceRooms@localhost" uuid="77c9a2d3-dbc5-498e-8b43-6b64a7d52206">
       <driver-ref>sqlserver.ms</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.microsoft.sqlserver.jdbc.SQLServerDriver</jdbc-driver>
-      <jdbc-url>jdbc:sqlserver://localhost\SQLEXPRESS01;database=AggregatorOfConferenceRooms</jdbc-url>
+      <jdbc-url>jdbc:sqlserver://localhost\SQLEXPRESS;database=AggregatorOfConferenceRooms</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>

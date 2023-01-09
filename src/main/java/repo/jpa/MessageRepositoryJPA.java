@@ -1,12 +1,9 @@
 package repo.jpa;
 
 import interfaces.ChatRepositoryInterface;
-import interfaces.ICrudRepositoryInterface;
 import model.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 public class MessageRepositoryJPA implements ChatRepositoryInterface<Message, Integer> {
     private final EntityManager manager;

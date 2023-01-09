@@ -10,13 +10,13 @@ public class BusinessOwner extends User {
 
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "idBusinessOwner")
-    private List<Product> products = new ArrayList<>();
+    private final List<Product> products = new ArrayList<>();
 
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<Offer> sentOffers = new ArrayList<>();
+    private final List<Offer> sentOffers = new ArrayList<>();
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    private List<Message> receivedMessages = new ArrayList<>();
+    private final List<Message> receivedMessages = new ArrayList<>();
 
     public BusinessOwner(String firstName, String lastName, String username, String password) {
         super(firstName, lastName, username, password);

@@ -53,10 +53,6 @@ public abstract class Product {
         return rating;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
-    }
-
     public String getDescription() {
         return description;
     }

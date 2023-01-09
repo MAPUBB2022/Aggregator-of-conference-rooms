@@ -4,21 +4,16 @@ import interfaces.OrganiserRepositoryInterface;
 import model.Organiser;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import javax.persistence.Query;
 
 public class OrganiserRepositoryJPA implements OrganiserRepositoryInterface {
 
-    private EntityManager manager;
+    private final EntityManager manager;
 
     public OrganiserRepositoryJPA(EntityManager manager) {
         this.manager = manager;
     }
 
-    public OrganiserRepositoryJPA() {
-
-    }
 
     @Override
     public void add(Organiser newOrganiser){

@@ -10,12 +10,12 @@ import java.util.List;
 
 public class Server {
 
-    private OrganiserController organiserController;
-    private BusinessOwnerController businessOwnerController;
+    private final OrganiserController organiserController;
+    private final BusinessOwnerController businessOwnerController;
 
-    private ProductController productController;
-    private  OrganiserRepositoryJPA organisersRepositoryJPA;
-    private  BusinessOwnerRepositoryJPA businessOwnersRepositoryJPA;
+    private final ProductController productController;
+    private final OrganiserRepositoryJPA organisersRepositoryJPA;
+    private final BusinessOwnerRepositoryJPA businessOwnersRepositoryJPA;
 
 
     public Server(EntityManager manager) {
@@ -43,8 +43,6 @@ public class Server {
         return productController;
     }
 
-    public Server() {
-    }
 
     public boolean login(List<String> credentials) {
 

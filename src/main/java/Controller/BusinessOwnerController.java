@@ -12,9 +12,9 @@ import java.util.List;
 public class BusinessOwnerController implements UserControllerInterface<BusinessOwner, List<String>> {
     private String username;
 
-    private BusinessOwnerRepositoryJPA businessOwnerRepositoryJPA;
-    private MessageRepositoryJPA messageRepositoryJPA;
-    private OfferRepositoryJPA offerRepositoryJPA;
+    private final BusinessOwnerRepositoryJPA businessOwnerRepositoryJPA;
+    private final MessageRepositoryJPA messageRepositoryJPA;
+    private final OfferRepositoryJPA offerRepositoryJPA;
 
 
 
@@ -22,9 +22,6 @@ public class BusinessOwnerController implements UserControllerInterface<Business
         this.businessOwnerRepositoryJPA = businessOwnerRepositoryJPA;
         this.messageRepositoryJPA = messageRepositoryJPA;
         this.offerRepositoryJPA = offerRepositoryJPA;
-    }
-
-    public BusinessOwnerController() {
     }
 
     public BusinessOwner getBusinessOwner() {
@@ -37,7 +34,7 @@ public class BusinessOwnerController implements UserControllerInterface<Business
     }
 
     public List<Product> getBusinessOwnerProducts() {
-        List<Product> products = businessOwnerRepositoryJPA.findById(this.username).getProducts();
+        List<Product> products = businessOwnerRepositoryJPA.findById(this.username).getProducts().stream().filter(product -> product.getStatusProduct() == StatusProduct.ACTIVE).toList();
         return products;
     }
 

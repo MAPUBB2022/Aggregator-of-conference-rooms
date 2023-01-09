@@ -1,6 +1,4 @@
 package repo.jpa;
-
-import interfaces.ProductRepositoryInterface;
 import model.*;
 
 import javax.persistence.EntityManager;
@@ -40,6 +38,8 @@ public class ProductRepositoryJPA {
         manager.getTransaction().begin();
         candyBar.setName(newCandyBar.getName());
         candyBar.setDescription(newCandyBar.getDescription());
+        candyBar.getSweets().removeAll(candyBar.getSweets());
+        candyBar.getSweets().addAll(newCandyBar.getSweets());
         manager.getTransaction().commit();
     }
 

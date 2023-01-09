@@ -4,8 +4,6 @@ import interfaces.BusinessOwnerRepositoryInterface;
 import model.*;
 
 import javax.persistence.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
 
 public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterface {
@@ -17,9 +15,6 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
         this.manager = manager;
     }
 
-    public BusinessOwnerRepositoryJPA() {
-
-    }
 
     @Override
     public void add(BusinessOwner newBusinessOwner){
@@ -68,6 +63,7 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
         BusinessOwner businessOwner = findById(username);
         businessOwner.getProducts().remove(product);
         manager.getTransaction().commit();
+        manager.refresh(businessOwner);
     }
 
 
@@ -101,11 +97,5 @@ public class BusinessOwnerRepositoryJPA implements BusinessOwnerRepositoryInterf
         Query query = manager.createNativeQuery("SELECT idBusinessOwner FROM products WHERE id = " + idProduct);
         return (BusinessOwner) manager.find(BusinessOwner.class, (String)query.getSingleResult());
 
-    }
-
-
-    public Integer getSize() {
-
-        return  (Integer) (manager.createNativeQuery("SELECT COUNT(products.username) FROM products", Product.class)).getSingleResult();
     }
 }

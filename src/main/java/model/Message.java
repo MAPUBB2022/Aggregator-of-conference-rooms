@@ -1,9 +1,7 @@
 package model;
 
 import javax.persistence.*;
-import java.util.List;
 
-//cls Message are un anunt, (idMessage,count), descr,startDate,endDate,nrInvitati, status
 @Entity
 @Table(name = "messages")
 public class Message {
@@ -76,24 +74,13 @@ public class Message {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public String getStartingDate() {
         return startingDate;
     }
 
-    public void setStartingDate(String startingDate) {
-        this.startingDate = startingDate;
-    }
-
     public String getEndingDate() {
         return endingDate;
-    }
-
-    public void setEndingDate(String endingDate) {
-        this.endingDate = endingDate;
     }
 
     public Status getStatus() {
@@ -108,9 +95,6 @@ public class Message {
         return guests;
     }
 
-    public void setGuests(Integer guests) {
-        this.guests = guests;
-    }
 
 
 }

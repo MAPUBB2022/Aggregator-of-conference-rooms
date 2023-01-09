@@ -35,16 +35,5 @@ public class Hall extends Product{
         this.capacity = capacity;
 }
 
-//    @Override
-//    public String toString() {
-//        return "Id: " + getId() +"\n"+
-//                "Name: " + getName() +"\n"+
-//                "Rating: " + getRating() +"\n"+
-//                "Location: " + location + "\n"+
-//                "Capacity: " + capacity + "\n"+
-//                "Description: " + getDescription() + "\n";
-
-   // }
-
 }
 

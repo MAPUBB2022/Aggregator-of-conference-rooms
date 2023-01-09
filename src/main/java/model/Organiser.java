@@ -8,9 +8,9 @@ import java.util.List;
 public class Organiser extends User {
 
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
-    private List<Offer> receivedOffers = new ArrayList<>();
+    private final List<Offer> receivedOffers = new ArrayList<>();
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
-    private List<Message> sentMessages = new ArrayList<>();
+    private final List<Message> sentMessages = new ArrayList<>();
 
 
     public Organiser(String firstName, String lastName, String username, String password) {

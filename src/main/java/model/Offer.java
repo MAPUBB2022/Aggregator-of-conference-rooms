@@ -86,7 +86,4 @@ public class Offer{
         return price;
     }
 
-    public void setPrice(Integer price) {
-        this.price = price;
-    }
 }

@@ -11,10 +11,10 @@ public class OrganiserController implements UserControllerInterface<Organiser, L
 
     private String username;
 
-    private OrganiserRepositoryJPA organiserRepositoryJPA;
+    private final OrganiserRepositoryJPA organiserRepositoryJPA;
 
-    private MessageRepositoryJPA messageRepositoryJPA;
-    private OfferRepositoryJPA offerRepositoryJPA;
+    private final MessageRepositoryJPA messageRepositoryJPA;
+    private final OfferRepositoryJPA offerRepositoryJPA;
 
 
 
@@ -24,8 +24,6 @@ public class OrganiserController implements UserControllerInterface<Organiser, L
         this.offerRepositoryJPA = offerRepositoryJPA;
     }
 
-    public OrganiserController() {
-    }
 
     public void setUsername(String username) {
         this.username = username;

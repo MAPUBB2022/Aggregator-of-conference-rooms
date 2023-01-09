@@ -4,8 +4,7 @@ import interfaces.ChatRepositoryInterface;
 import model.*;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
+
 
 public class OfferRepositoryJPA implements ChatRepositoryInterface<Offer, Integer> {
     private final EntityManager manager;
